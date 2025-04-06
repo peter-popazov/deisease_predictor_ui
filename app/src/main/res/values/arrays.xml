@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="language_difficulty_options">
+        <item>Never have difficulty</item>
+        <item>Sometimes have difficulty</item>
+        <item>Often have difficulty</item>
+        <item>Always have difficulty</item>
+    </string-array>
+</resources> 

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Toolbar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cognitive Assessment"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"/>
+        </LinearLayout>
+
+        <!-- Cognitive Questions -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cognitive Function"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="#A4B0BC"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Problem Solving -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rate your problem-solving ability"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="8dp"/>
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/sliderProblemSolving"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:valueFrom="0"
+                    android:valueTo="10"
+                    android:stepSize="1"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Language Skills -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Do you have difficulty finding the right words?"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="8dp"/>
+
+                <Spinner
+                    android:id="@+id/spinnerLanguageSkills"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Attention Span -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="How long can you maintain focus on tasks?"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/editTextAttentionSpan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white"
+                    android:padding="12dp"
+                    android:hint="Enter duration (in minutes)"
+                    android:inputType="number"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Decision Making -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rate your decision-making confidence"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="8dp"/>
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/sliderDecisionMaking"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:valueFrom="1"
+                    android:valueTo="10"
+                    android:stepSize="1"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Navigation Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPrevious"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Previous"
+                android:textAllCaps="false"
+                android:layout_marginEnd="8dp"
+                android:padding="16dp"
+                app:cornerRadius="8dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonNext"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Next"
+                android:textAllCaps="false"
+                android:layout_marginStart="8dp"
+                android:padding="16dp"
+                app:cornerRadius="8dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView> 
