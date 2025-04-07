@@ -34,13 +34,7 @@ class PatientDetailsActivity : AppCompatActivity() {
         setupBMICalculation()
         
         // Set up navigation
-        findViewById<MaterialButton>(R.id.buttonNext).setOnClickListener {
-            if (validateInputs()) {
-                savePersonalData()
-                // Navigate to Memory Assessment screen
-                startActivity(Intent(this, MemoryAssessmentActivity::class.java))
-            }
-        }
+        setupNavigation()
     }
     
     private fun initializeViews() {
@@ -160,6 +154,17 @@ class PatientDetailsActivity : AppCompatActivity() {
         with(sharedPrefs.edit()) {
             putString("personal_data", jsonObject.toString())
             apply()
+        }
+    }
+    
+    private fun setupNavigation() {
+        findViewById<MaterialButton>(R.id.buttonNext).setOnClickListener {
+            if (validateInputs()) {
+                savePersonalData()
+                // Navigate to MedicalHistoryActivity instead of AdditionalInfoActivity
+                val intent = Intent(this, MedicalHistoryActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 } 

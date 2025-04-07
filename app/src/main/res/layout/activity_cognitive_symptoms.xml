@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F8FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Progress Bar -->
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:indicatorColor="#1A73E8"
+            app:trackColor="#E8F0FE"
+            app:trackCornerRadius="4dp" />
+
+        <!-- Header Section with Gradient Background -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/gradient_background"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cognitive Symptoms"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Please indicate any cognitive or behavioral symptoms you have experienced"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Form Section -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <!-- Symptoms Section -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Symptoms"
+                    android:textColor="#1A73E8"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <!-- Confusion -->
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/checkboxConfusion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Confusion"
+                    android:textSize="16sp"
+                    app:buttonTint="#1A73E8" />
+
+                <!-- Disorientation -->
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/checkboxDisorientation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Disorientation"
+                    android:textSize="16sp"
+                    app:buttonTint="#1A73E8" />
+
+                <!-- Forgetfulness -->
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/checkboxForgetfulness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Forgetfulness"
+                    android:textSize="16sp"
+                    app:buttonTint="#1A73E8" />
+
+                <!-- Depression -->
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/checkboxDepression"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Depression"
+                    android:textSize="16sp"
+                    app:buttonTint="#1A73E8" />
+
+                <!-- Memory Complaints -->
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/checkboxMemoryComplaints"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Memory Complaints"
+                    android:textSize="16sp"
+                    app:buttonTint="#1A73E8" />
+
+                <!-- Personality Changes -->
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/checkboxPersonalityChanges"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Personality Changes"
+                    android:textSize="16sp"
+                    app:buttonTint="#1A73E8" />
+
+                <!-- Difficulty Completing Tasks -->
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/checkboxDifficultyCompletingTasks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Difficulty Completing Tasks"
+                    android:textSize="16sp"
+                    app:buttonTint="#1A73E8" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Navigation Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPrevious"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:padding="16dp"
+                android:text="Previous"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:cornerRadius="12dp"
+                app:elevation="4dp"
+                android:backgroundTint="#E8F0FE"
+                android:textColor="#1A73E8"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonNext"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:padding="16dp"
+                android:text="Next"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:cornerRadius="12dp"
+                app:elevation="4dp"
+                android:backgroundTint="#0288D1"/>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView> 
