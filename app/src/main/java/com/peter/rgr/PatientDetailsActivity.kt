@@ -2,19 +2,19 @@ package com.peter.rgr
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.textfield.TextInputEditText
+import androidx.lifecycle.Observer
 import com.google.android.material.button.MaterialButton
-import org.json.JSONObject
-import java.io.File
-import kotlin.math.pow
-import kotlin.math.round
+import com.google.android.material.textfield.TextInputEditText
+import com.peter.rgr.viewmodel.PatientDetailsViewModel
 
 class PatientDetailsActivity : AppCompatActivity() {
+    private val viewModel: PatientDetailsViewModel by viewModels()
     
     private lateinit var editTextAge: TextInputEditText
     private lateinit var spinnerGender: AutoCompleteTextView
@@ -22,19 +22,23 @@ class PatientDetailsActivity : AppCompatActivity() {
     private lateinit var editTextWeight: TextInputEditText
     private lateinit var spinnerEducation: AutoCompleteTextView
     private lateinit var spinnerEthnicity: AutoCompleteTextView
-    private lateinit var textViewBMI: android.widget.TextView
-    
+    private lateinit var textViewBMI: TextView
+    private lateinit var buttonNext: MaterialButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_patient_details)
         
-        // Initialize views
-        initializeViews()
-        setupSpinners()
-        setupBMICalculation()
-        
-        // Set up navigation
-        setupNavigation()
+        try {
+            initializeViews()
+            setupSpinners()
+            setupFieldListeners()
+            observeViewModel()
+            setupNavigation()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error initializing activity: ${e.message}", Toast.LENGTH_LONG).show()
+            finish()
+        }
     }
     
     private fun initializeViews() {
@@ -45,6 +49,7 @@ class PatientDetailsActivity : AppCompatActivity() {
         spinnerEducation = findViewById(R.id.spinnerEducation)
         spinnerEthnicity = findViewById(R.id.spinnerEthnicity)
         textViewBMI = findViewById(R.id.textViewBMI)
+        buttonNext = findViewById(R.id.buttonNext)
     }
     
     private fun setupSpinners() {
@@ -64,104 +69,67 @@ class PatientDetailsActivity : AppCompatActivity() {
         spinnerEthnicity.setAdapter(ethnicityAdapter)
     }
     
-    private fun setupBMICalculation() {
-        val bmiWatcher = object : TextWatcher {
+    private fun setupFieldListeners() {
+        editTextAge.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                calculateBMI()
+            override fun afterTextChanged(s: android.text.Editable?) {
+                viewModel.updatePatientDetails(age = s.toString().toIntOrNull())
             }
+        })
+
+        spinnerGender.setOnItemClickListener { _, _, _, _ ->
+            viewModel.updatePatientDetails(gender = spinnerGender.text.toString())
         }
-        
-        editTextHeight.addTextChangedListener(bmiWatcher)
-        editTextWeight.addTextChangedListener(bmiWatcher)
+
+        editTextHeight.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                viewModel.updatePatientDetails(height = s.toString().toFloatOrNull())
+            }
+        })
+
+        editTextWeight.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                viewModel.updatePatientDetails(weight = s.toString().toFloatOrNull())
+            }
+        })
+
+        spinnerEducation.setOnItemClickListener { _, _, _, _ ->
+            viewModel.updatePatientDetails(educationLevel = spinnerEducation.text.toString())
+        }
+
+        spinnerEthnicity.setOnItemClickListener { _, _, _, _ ->
+            viewModel.updatePatientDetails(ethnicity = spinnerEthnicity.text.toString())
+        }
     }
-    
-    private fun calculateBMI() {
-        val height = editTextHeight.text.toString().toFloatOrNull()
-        val weight = editTextWeight.text.toString().toFloatOrNull()
-        
-        if (height != null && weight != null && height > 0) {
-            val heightInMeters = height / 100
-            val bmi = weight / (heightInMeters.pow(2))
-            val roundedBMI = round(bmi * 10) / 10
-            textViewBMI.text = "BMI: $roundedBMI"
-        } else {
-            textViewBMI.text = "BMI: --"
-        }
-    }
-    
-    private fun validateInputs(): Boolean {
-        var isValid = true
-        
-        if (editTextAge.text.toString().trim().isEmpty()) {
-            editTextAge.error = "Please enter age"
-            isValid = false
-        }
-        
-        if (spinnerGender.text.toString().trim().isEmpty()) {
-            spinnerGender.error = "Please select gender"
-            isValid = false
-        }
-        
-        if (editTextHeight.text.toString().trim().isEmpty()) {
-            editTextHeight.error = "Please enter height"
-            isValid = false
-        }
-        
-        if (editTextWeight.text.toString().trim().isEmpty()) {
-            editTextWeight.error = "Please enter weight"
-            isValid = false
-        }
-        
-        if (spinnerEducation.text.toString().trim().isEmpty()) {
-            spinnerEducation.error = "Please select education level"
-            isValid = false
-        }
-        
-        if (spinnerEthnicity.text.toString().trim().isEmpty()) {
-            spinnerEthnicity.error = "Please select ethnicity"
-            isValid = false
-        }
-        
-        return isValid
-    }
-    
-    private fun savePersonalData() {
-        val height = editTextHeight.text.toString().toFloatOrNull() ?: 0f
-        val weight = editTextWeight.text.toString().toFloatOrNull() ?: 0f
-        val bmi = if (height > 0) {
-            val heightInMeters = height / 100
-            round((weight / (heightInMeters.pow(2))) * 10) / 10
-        } else 0.0
-        
-        val jsonObject = JSONObject().apply {
-            put("age", editTextAge.text.toString().toIntOrNull() ?: 0)
-            put("gender", spinnerGender.text.toString())
-            put("height", height)
-            put("weight", weight)
-            put("bmi", bmi)
-            put("educationLevel", spinnerEducation.text.toString())
-            put("ethnicity", spinnerEthnicity.text.toString())
-        }
-        
-        // Save to file
-        val file = File(filesDir, "personal_data.json")
-        file.writeText(jsonObject.toString())
-        
-        // Also save to shared preferences for easy access
-        val sharedPrefs = getSharedPreferences("AlzheimerAssessment", MODE_PRIVATE)
-        with(sharedPrefs.edit()) {
-            putString("personal_data", jsonObject.toString())
-            apply()
-        }
+
+    private fun observeViewModel() {
+        viewModel.patientDetails.observe(this, Observer { details ->
+            editTextAge.setText(if (details.age > 0) details.age.toString() else "")
+            spinnerGender.setText(details.gender, false)
+            editTextHeight.setText(if (details.height > 0) details.height.toString() else "")
+            editTextWeight.setText(if (details.weight > 0) details.weight.toString() else "")
+            spinnerEducation.setText(details.educationLevel, false)
+            spinnerEthnicity.setText(details.ethnicity, false)
+        })
+
+        viewModel.bmi.observe(this, Observer { bmi ->
+            textViewBMI.text = if (bmi > 0) "BMI: $bmi" else "BMI: --"
+        })
+
+        viewModel.error.observe(this, Observer { error ->
+            error?.let { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
+        })
     }
     
     private fun setupNavigation() {
-        findViewById<MaterialButton>(R.id.buttonNext).setOnClickListener {
-            if (validateInputs()) {
-                savePersonalData()
-                // Navigate to MedicalHistoryActivity instead of AdditionalInfoActivity
+        buttonNext.setOnClickListener {
+            if (viewModel.validateInputs()) {
+                viewModel.savePatientDetails()
                 val intent = Intent(this, MedicalHistoryActivity::class.java)
                 startActivity(intent)
             }
