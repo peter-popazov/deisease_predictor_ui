@@ -2,19 +2,20 @@ package com.peter.rgr
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.peter.rgr.viewmodel.PatientDetailsViewModel
 
 class PatientDetailsActivity : AppCompatActivity() {
-    private val viewModel: PatientDetailsViewModel by viewModels()
+    private lateinit var viewModel: PatientDetailsViewModel
     
     private lateinit var editTextAge: TextInputEditText
     private lateinit var spinnerGender: AutoCompleteTextView
@@ -28,20 +29,23 @@ class PatientDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_patient_details)
-        
+        viewModel = ViewModelProvider(this)[PatientDetailsViewModel::class.java]
         try {
+            Log.d("PatientDetailsActivity", "Starting onCreate")
             initializeViews()
             setupSpinners()
-            setupFieldListeners()
             observeViewModel()
+            setupFieldListeners()
             setupNavigation()
         } catch (e: Exception) {
+            Log.e("PatientDetailsActivity", "Initialization error", e)
             Toast.makeText(this, "Error initializing activity: ${e.message}", Toast.LENGTH_LONG).show()
             finish()
         }
     }
     
     private fun initializeViews() {
+        editTextAge = findViewById(R.id.editTextAge)
         editTextAge = findViewById(R.id.editTextAge)
         spinnerGender = findViewById(R.id.spinnerGender)
         editTextHeight = findViewById(R.id.editTextHeight)
@@ -109,12 +113,24 @@ class PatientDetailsActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         viewModel.patientDetails.observe(this, Observer { details ->
-            editTextAge.setText(if (details.age > 0) details.age.toString() else "")
-            spinnerGender.setText(details.gender, false)
-            editTextHeight.setText(if (details.height > 0) details.height.toString() else "")
-            editTextWeight.setText(if (details.weight > 0) details.weight.toString() else "")
-            spinnerEducation.setText(details.educationLevel, false)
-            spinnerEthnicity.setText(details.ethnicity, false)
+            if (editTextAge.text.toString() != (if (details.age > 0) details.age.toString() else "")) {
+                editTextAge.setText(if (details.age > 0) details.age.toString() else "")
+            }
+            if (spinnerGender.text.toString() != details.gender) {
+                spinnerGender.setText(details.gender, false)
+            }
+            if (editTextHeight.text.toString() != (if (details.height > 0) details.height.toString() else "")) {
+                editTextHeight.setText(if (details.height > 0) details.height.toString() else "")
+            }
+            if (editTextWeight.text.toString() != (if (details.weight > 0) details.weight.toString() else "")) {
+                editTextWeight.setText(if (details.weight > 0) details.weight.toString() else "")
+            }
+            if (spinnerEducation.text.toString() != details.educationLevel) {
+                spinnerEducation.setText(details.educationLevel, false)
+            }
+            if (spinnerEthnicity.text.toString() != details.ethnicity) {
+                spinnerEthnicity.setText(details.ethnicity, false)
+            }
         })
 
         viewModel.bmi.observe(this, Observer { bmi ->
@@ -125,7 +141,7 @@ class PatientDetailsActivity : AppCompatActivity() {
             error?.let { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
         })
     }
-    
+
     private fun setupNavigation() {
         buttonNext.setOnClickListener {
             if (viewModel.validateInputs()) {

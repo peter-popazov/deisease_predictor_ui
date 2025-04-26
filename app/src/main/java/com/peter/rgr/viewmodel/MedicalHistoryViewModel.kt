@@ -35,8 +35,8 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
         hypertension: Boolean? = null,
         cardiovascularDisease: Boolean? = null,
         headInjury: Boolean? = null,
-        systolicBP: String? = null,
-        diastolicBP: String? = null,
+        systolicBP: Int? = null,
+        diastolicBP: Int? = null,
         alcoholConsumption: Int? = null,
         dietQuality: String? = null,
         sleepQuality: String? = null,
@@ -62,8 +62,8 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
         val current = _medicalHistory.value ?: return
         var filledFields = 0
 
-        if (current.systolicBP.isNotEmpty()) filledFields++
-        if (current.diastolicBP.isNotEmpty()) filledFields++
+        if (current.systolicBP > 0) filledFields++
+        if (current.diastolicBP > 0) filledFields++
         if (current.dietQuality.isNotEmpty()) filledFields++
         if (current.sleepQuality.isNotEmpty()) filledFields++
         if (current.smoking.isNotEmpty()) filledFields++
@@ -78,11 +78,11 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
     fun validateInputs(): Boolean {
         val current = _medicalHistory.value ?: return false
         
-        if (current.systolicBP.isEmpty()) {
+        if (current.systolicBP <= 0) {
             _error.value = "Please enter systolic blood pressure"
             return false
         }
-        if (current.diastolicBP.isEmpty()) {
+        if (current.diastolicBP <= 0) {
             _error.value = "Please enter diastolic blood pressure"
             return false
         }

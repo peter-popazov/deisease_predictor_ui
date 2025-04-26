@@ -2,13 +2,16 @@ package com.peter.rgr
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.TextWatcher
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.CompoundButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.progressindicator.LinearProgressIndicator
@@ -17,8 +20,8 @@ import com.google.android.material.textfield.TextInputEditText
 import com.peter.rgr.viewmodel.MedicalHistoryViewModel
 
 class MedicalHistoryActivity : AppCompatActivity() {
-    private val viewModel: MedicalHistoryViewModel by viewModels()
-    
+    private lateinit var viewModel: MedicalHistoryViewModel
+
     private lateinit var checkBoxDiabetes: MaterialCheckBox
     private lateinit var checkBoxHypertension: MaterialCheckBox
     private lateinit var checkBoxCardiovascularDisease: MaterialCheckBox
@@ -34,16 +37,25 @@ class MedicalHistoryActivity : AppCompatActivity() {
     private lateinit var buttonPrevious: MaterialButton
     private lateinit var progressBar: LinearProgressIndicator
 
+    private var systolicBPWatcher: TextWatcher? = null
+    private var diastolicBPWatcher: TextWatcher? = null
+
+    private var diabetesCheckedChangeListener: CompoundButton.OnCheckedChangeListener? = null
+    private var hypertensionCheckedChangeListener: CompoundButton.OnCheckedChangeListener? = null
+    private var cardiovascularCheckedChangeListener: CompoundButton.OnCheckedChangeListener? = null
+    private var headInjuryCheckedChangeListener: CompoundButton.OnCheckedChangeListener? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_medical_history)
+        viewModel = ViewModelProvider(this)[MedicalHistoryViewModel::class.java]
 
         try {
             initializeViews()
             setupSpinners()
-            setupNavigation()
             setupFieldListeners()
             observeViewModel()
+            setupNavigation()
         } catch (e: Exception) {
             Toast.makeText(this, "Error initializing activity: ${e.message}", Toast.LENGTH_LONG).show()
             finish()
@@ -68,32 +80,54 @@ class MedicalHistoryActivity : AppCompatActivity() {
     }
 
     private fun setupFieldListeners() {
-        val textWatcher = object : android.text.TextWatcher {
+        // Initialize text watchers
+        systolicBPWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: android.text.Editable?) {
                 viewModel.updateMedicalHistory(
-                    systolicBP = editTextSystolicBP.text.toString(),
-                    diastolicBP = editTextDiastolicBP.text.toString()
+                    systolicBP = s.toString().toIntOrNull() ?: 0,
+                    diastolicBP = editTextDiastolicBP.text.toString().toIntOrNull() ?: 0
                 )
             }
         }
 
-        editTextSystolicBP.addTextChangedListener(textWatcher)
-        editTextDiastolicBP.addTextChangedListener(textWatcher)
+        diastolicBPWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                viewModel.updateMedicalHistory(
+                    systolicBP = editTextSystolicBP.text.toString().toIntOrNull() ?: 0,
+                    diastolicBP = s.toString().toIntOrNull() ?: 0
+                )
+            }
+        }
 
-        checkBoxDiabetes.setOnCheckedChangeListener { _, isChecked ->
+        // Initialize checkbox listeners
+        diabetesCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
             viewModel.updateMedicalHistory(diabetes = isChecked)
         }
-        checkBoxHypertension.setOnCheckedChangeListener { _, isChecked ->
+
+        hypertensionCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
             viewModel.updateMedicalHistory(hypertension = isChecked)
         }
-        checkBoxCardiovascularDisease.setOnCheckedChangeListener { _, isChecked ->
+
+        cardiovascularCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
             viewModel.updateMedicalHistory(cardiovascularDisease = isChecked)
         }
-        checkBoxHeadInjury.setOnCheckedChangeListener { _, isChecked ->
+
+        headInjuryCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
             viewModel.updateMedicalHistory(headInjury = isChecked)
         }
+
+        // Attach listeners
+        editTextSystolicBP.addTextChangedListener(systolicBPWatcher)
+        editTextDiastolicBP.addTextChangedListener(diastolicBPWatcher)
+
+        checkBoxDiabetes.setOnCheckedChangeListener(diabetesCheckedChangeListener)
+        checkBoxHypertension.setOnCheckedChangeListener(hypertensionCheckedChangeListener)
+        checkBoxCardiovascularDisease.setOnCheckedChangeListener(cardiovascularCheckedChangeListener)
+        checkBoxHeadInjury.setOnCheckedChangeListener(headInjuryCheckedChangeListener)
 
         sliderAlcohol.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
@@ -115,25 +149,71 @@ class MedicalHistoryActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         viewModel.medicalHistory.observe(this, Observer { medicalHistory ->
-            checkBoxDiabetes.isChecked = medicalHistory.diabetes
-            checkBoxHypertension.isChecked = medicalHistory.hypertension
-            checkBoxCardiovascularDisease.isChecked = medicalHistory.cardiovascularDisease
-            checkBoxHeadInjury.isChecked = medicalHistory.headInjury
-            editTextSystolicBP.setText(medicalHistory.systolicBP)
-            editTextDiastolicBP.setText(medicalHistory.diastolicBP)
-            sliderAlcohol.value = medicalHistory.alcoholConsumption.toFloat()
-            textAlcoholValue.text = "${medicalHistory.alcoholConsumption} units"
-            spinnerDietQuality.setText(medicalHistory.dietQuality, false)
-            spinnerSleepQuality.setText(medicalHistory.sleepQuality, false)
-            spinnerSmoking.setText(medicalHistory.smoking, false)
+            try {
+                // Temporarily detach listeners
+                editTextSystolicBP.removeTextChangedListener(systolicBPWatcher)
+                editTextDiastolicBP.removeTextChangedListener(diastolicBPWatcher)
+
+                checkBoxDiabetes.setOnCheckedChangeListener(null)
+                checkBoxHypertension.setOnCheckedChangeListener(null)
+                checkBoxCardiovascularDisease.setOnCheckedChangeListener(null)
+                checkBoxHeadInjury.setOnCheckedChangeListener(null)
+
+                // Update UI
+                checkBoxDiabetes.isChecked = medicalHistory.diabetes
+                checkBoxHypertension.isChecked = medicalHistory.hypertension
+                checkBoxCardiovascularDisease.isChecked = medicalHistory.cardiovascularDisease
+                checkBoxHeadInjury.isChecked = medicalHistory.headInjury
+
+                editTextSystolicBP.setText(
+                    if (medicalHistory.systolicBP > 0) medicalHistory.systolicBP.toString() else ""
+                )
+                editTextDiastolicBP.setText(
+                    if (medicalHistory.diastolicBP > 0) medicalHistory.diastolicBP.toString() else ""
+                )
+
+                sliderAlcohol.value = medicalHistory.alcoholConsumption.toFloat()
+                textAlcoholValue.text = "${medicalHistory.alcoholConsumption} units"
+
+                spinnerDietQuality.setText(
+                    if (medicalHistory.dietQuality.isNotEmpty()) medicalHistory.dietQuality else "",
+                    false
+                )
+                spinnerSleepQuality.setText(
+                    if (medicalHistory.sleepQuality.isNotEmpty()) medicalHistory.sleepQuality else "",
+                    false
+                )
+                spinnerSmoking.setText(
+                    if (medicalHistory.smoking.isNotEmpty()) medicalHistory.smoking else "",
+                    false
+                )
+
+                // Reattach listeners
+                editTextSystolicBP.addTextChangedListener(systolicBPWatcher)
+                editTextDiastolicBP.addTextChangedListener(diastolicBPWatcher)
+
+                checkBoxDiabetes.setOnCheckedChangeListener(diabetesCheckedChangeListener)
+                checkBoxHypertension.setOnCheckedChangeListener(hypertensionCheckedChangeListener)
+                checkBoxCardiovascularDisease.setOnCheckedChangeListener(cardiovascularCheckedChangeListener)
+                checkBoxHeadInjury.setOnCheckedChangeListener(headInjuryCheckedChangeListener)
+            } catch (e: Exception) {
+                Log.e("MedicalHistoryActivity", "Error updating UI", e)
+                Toast.makeText(this, "Error updating UI: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         })
 
         viewModel.progress.observe(this, Observer { progress ->
-            progressBar.progress = progress
+            try {
+                progressBar.progress = progress
+            } catch (e: Exception) {
+                Log.e("MedicalHistoryActivity", "Error updating progress", e)
+            }
         })
 
         viewModel.error.observe(this, Observer { error ->
-            error?.let { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
+            error?.let {
+                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            }
         })
     }
 

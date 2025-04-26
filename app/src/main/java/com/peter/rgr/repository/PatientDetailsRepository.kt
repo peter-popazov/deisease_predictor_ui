@@ -4,50 +4,36 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.peter.rgr.data.PatientDetails
 import org.json.JSONObject
-import java.io.File
 
-class PatientDetailsRepository(private val context: Context) {
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("AlzheimerAssessment", Context.MODE_PRIVATE)
+class PatientDetailsRepository(context: Context) {
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("patient_details", Context.MODE_PRIVATE)
 
-    fun savePatientDetails(details: PatientDetails) {
-        try {
-            // Save to JSON file
-            val jsonObject = JSONObject().apply {
-                put("age", details.age)
-                put("gender", details.gender)
-                put("height", details.height)
-                put("weight", details.weight)
-                put("bmi", details.bmi)
-                put("educationLevel", details.educationLevel)
-                put("ethnicity", details.ethnicity)
-            }
-
-            val file = File(context.filesDir, "personal_data.json")
-            file.writeText(jsonObject.toString())
-
-            // Save to SharedPreferences
-            with(sharedPreferences.edit()) {
-                putInt("age", details.age)
-                putString("gender", details.gender)
-                putFloat("height", details.height)
-                putFloat("weight", details.weight)
-                putString("educationLevel", details.educationLevel)
-                putString("ethnicity", details.ethnicity)
-                apply()
-            }
-        } catch (e: Exception) {
-            throw Exception("Error saving patient details: ${e.message}")
+    fun savePatientDetails(patientDetails: PatientDetails) {
+        val json = JSONObject().apply {
+            put("age", patientDetails.age)
+            put("gender", patientDetails.gender)
+            put("height", patientDetails.height)
+            put("weight", patientDetails.weight)
+            put("educationLevel", patientDetails.educationLevel)
+            put("ethnicity", patientDetails.ethnicity)
         }
+        sharedPreferences.edit().putString("patient_data", json.toString()).apply()
     }
 
     fun getPatientDetails(): PatientDetails {
-        return PatientDetails(
-            age = sharedPreferences.getInt("age", 0),
-            gender = sharedPreferences.getString("gender", "") ?: "",
-            height = sharedPreferences.getFloat("height", 0f),
-            weight = sharedPreferences.getFloat("weight", 0f),
-            educationLevel = sharedPreferences.getString("educationLevel", "") ?: "",
-            ethnicity = sharedPreferences.getString("ethnicity", "") ?: ""
-        )
+        val jsonString = sharedPreferences.getString("patient_data", null)
+        return if (jsonString != null) {
+            val json = JSONObject(jsonString)
+            PatientDetails(
+                age = json.optInt("age", 0),
+                gender = json.optString("gender", ""),
+                height = json.optDouble("height", 0.0).toFloat(),
+                weight = json.optDouble("weight", 0.0).toFloat(),
+                educationLevel = json.optString("educationLevel", ""),
+                ethnicity = json.optString("ethnicity", "")
+            )
+        } else {
+            PatientDetails()
+        }
     }
 } 

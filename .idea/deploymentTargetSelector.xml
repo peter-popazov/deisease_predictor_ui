@@ -11,13 +11,13 @@
       <SelectionState runConfigName="PatientDetailsActivity (2)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PatientDetailsActivity (4)">
+      <SelectionState runConfigName="CognitiveSymptomsActivity">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PatientDetailsActivity (5)">
+      <SelectionState runConfigName="CognitiveSymptomsActivity (1)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PatientDetailsActivity (1)">
+      <SelectionState runConfigName="MedicalHistoryActivity">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
