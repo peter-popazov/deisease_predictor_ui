@@ -7,8 +7,12 @@ data class MedicalHistory(
     val headInjury: Boolean = false,
     val systolicBP: Int = 0,
     val diastolicBP: Int = 0,
-    val alcoholConsumption: Int = 0,
-    val dietQuality: String = "",
-    val sleepQuality: String = "",
-    val smoking: String = ""
+    val alcoholConsumption: Boolean = false,
+    val confusion: Boolean = false,
+    val disorientation: Boolean = false,
+    val forgetfulness: Boolean = false,
+    val depression: Boolean = false,
+    val memoryComplaints: Boolean = false,
+    val personalityChanges: Boolean = false,
+    val difficultyCompletingTasks: Boolean = false
 ) 
