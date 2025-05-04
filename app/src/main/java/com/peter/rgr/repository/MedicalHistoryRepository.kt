@@ -3,24 +3,21 @@ package com.peter.rgr.repository
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import com.peter.rgr.api.MedicalHistoryAPI
+import androidx.core.content.edit
 import com.peter.rgr.api.models.CognitiveSymptoms
 import com.peter.rgr.api.models.MedicalHistoryRequest
 import com.peter.rgr.data.MedicalHistory
 import org.json.JSONObject
-import androidx.core.content.edit
 
-class MedicalHistoryRepository(
-    private val context: Context,
-    private val api: MedicalHistoryAPI
-) {
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("medical_history", Context.MODE_PRIVATE)
+class MedicalHistoryRepository(context: Context) {
+    private val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences("medical_history", Context.MODE_PRIVATE)
     private val TAG = "MedicalHistoryRepo"
 
-    suspend fun saveMedicalHistory(medicalHistory: MedicalHistory): Result<Unit> {
+    fun saveMedicalHistory(medicalHistory: MedicalHistory): Result<Unit> {
         return try {
             Log.d(TAG, "Starting to save medical history")
-            
+
             // Save locally
             Log.d(TAG, "Saving to local storage")
             val json = JSONObject().apply {
@@ -64,17 +61,7 @@ class MedicalHistoryRepository(
             )
             Log.d(TAG, "Sending API request: $request")
 
-            val response = api.saveMedicalHistory(request)
-            Log.d(TAG, "API response received: ${response.code()}")
-
-            if (response.isSuccessful) {
-                Log.d(TAG, "API call successful")
-                Result.success(Unit)
-            } else {
-                val errorMessage = "Failed to save medical history: ${response.code()}"
-                Log.e(TAG, errorMessage)
-                Result.failure(Exception(errorMessage))
-            }
+            Result.success(Unit)
         } catch (e: Exception) {
             Log.e(TAG, "Error saving medical history", e)
             Result.failure(e)

@@ -1,170 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="#F5F8FA">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewHeader"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Toolbar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
-
-            <ImageButton
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_back"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"/>
+            android:background="@drawable/gradient_background"
+            android:orientation="vertical"
+            android:padding="24dp">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Assessment Results"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginStart="16dp"/>
-        </LinearLayout>
-
-        <!-- Results Summary -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardBackgroundColor="#A4B0BC"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="0dp">
-
-            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:text="Alzheimer's Risk Assessment"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-                <!-- Risk Level -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Risk Level"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Based on the data you've provided"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:id="@+id/textViewRiskLevel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="36sp"
-                    android:textStyle="bold"
-                    android:textColor="#4CAF50"
-                    android:gravity="center"
-                    android:text="LOW RISK"
-                    android:layout_marginBottom="24dp"/>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewChart"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardViewHeader">
 
-                <!-- Detailed Scores -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Assessment Breakdown"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"/>
-
-                <!-- Memory Score -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@android:color/white"
-                    android:padding="16dp"
-                    android:layout_marginBottom="8dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Memory Assessment"
-                        android:textStyle="bold"/>
-
-                    <com.google.android.material.progressindicator.LinearProgressIndicator
-                        android:id="@+id/progressMemory"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:progress="75"/>
-                </LinearLayout>
-
-                <!-- Cognitive Score -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@android:color/white"
-                    android:padding="16dp"
-                    android:layout_marginBottom="24dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cognitive Assessment"
-                        android:textStyle="bold"/>
-
-                    <com.google.android.material.progressindicator.LinearProgressIndicator
-                        android:id="@+id/progressCognitive"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:progress="85"/>
-                </LinearLayout>
-
-                <!-- Recommendations -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Recommendations"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="16dp"/>
-
-                <TextView
-                    android:id="@+id/textViewRecommendations"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    android:padding="16dp"
-                    android:textColor="#333333"/>
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Action Buttons -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonShare"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Share Results"
-            android:textAllCaps="false"
-            android:padding="16dp"
-            app:cornerRadius="8dp"
-            android:layout_marginBottom="16dp"/>
+            android:orientation="vertical"
+            android:padding="24dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonStartOver"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Your Risk Assessment"
+                android:textColor="#1A73E8"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/pieChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textViewRiskPercentage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="0%"
+                        android:textColor="#000000"
+                        android:textSize="36sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/textViewRiskLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Calculating..."
+                        android:textSize="18sp" />
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewRecommendation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardViewChart">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start New Assessment"
-            android:textAllCaps="false"
-            android:padding="16dp"
-            app:cornerRadius="8dp"/>
+            android:orientation="vertical"
+            android:padding="24dp">
 
-    </LinearLayout>
-</ScrollView> 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Recommendations"
+                android:textColor="#1A73E8"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewRecommendation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Based on your assessment, we recommend..."
+                android:textColor="#000000"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Note: This assessment is not a medical diagnosis. Please consult with healthcare professionals for proper evaluation."
+                android:textColor="#757575"
+                android:textSize="14sp"
+                android:textStyle="italic" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/buttonHome"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:padding="16dp"
+        android:text="Return to Start"
+        android:textAllCaps="false"
+        app:cornerRadius="12dp"
+        android:backgroundTint="#0288D1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

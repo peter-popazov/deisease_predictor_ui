@@ -5,16 +5,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.peter.rgr.api.MedicalHistoryAPI
-import com.peter.rgr.api.RetrofitClient
 import com.peter.rgr.data.MedicalHistory
 import com.peter.rgr.repository.MedicalHistoryRepository
 import kotlinx.coroutines.launch
 
 class MedicalHistoryViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = MedicalHistoryRepository(
-        application,
-        RetrofitClient.create(MedicalHistoryAPI::class.java)
+        application
     )
     
     private val _medicalHistory = MutableLiveData<MedicalHistory>()

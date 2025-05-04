@@ -1,171 +1,130 @@
-//package com.peter.rgr
-//
-//import android.content.Intent
-//import android.os.Bundle
-//import android.widget.TextView
-//import androidx.appcompat.app.AppCompatActivity
-//import com.google.android.material.button.MaterialButton
-//import com.google.android.material.progressindicator.LinearProgressIndicator
-//
-//class ResultsActivity : AppCompatActivity() {
-//
-//    private lateinit var textViewRiskLevel: TextView
-//    private lateinit var progressMemory: LinearProgressIndicator
-//    private lateinit var progressCognitive: LinearProgressIndicator
-//    private lateinit var textViewRecommendations: TextView
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_results)
-//
-//        // Initialize views
-//        textViewRiskLevel = findViewById(R.id.textViewRiskLevel)
-//        progressMemory = findViewById(R.id.progressMemory)
-//        progressCognitive = findViewById(R.id.progressCognitive)
-//        textViewRecommendations = findViewById(R.id.textViewRecommendations)
-//
-//        // Calculate and display results
-//        calculateResults()
-//
-//        // Set up button listeners
-//        findViewById<MaterialButton>(R.id.buttonShare).setOnClickListener {
-//            shareResults()
-//        }
-//
-//        findViewById<MaterialButton>(R.id.buttonStartOver).setOnClickListener {
-//            startOver()
-//        }
-//    }
-//
-//    private fun calculateResults() {
-//        val sharedPrefs = getSharedPreferences("AlzheimerAssessment", MODE_PRIVATE)
-//
-//        // Calculate Memory Score
-//        val recentMemoryScore = sharedPrefs.getFloat("recent_memory_score", 0f)
-//        val appointmentsMemory = sharedPrefs.getInt("appointments_memory", 0)
-//        val memoryImpact = sharedPrefs.getFloat("memory_impact", 0f)
-//
-//        val memoryScore = calculateMemoryScore(recentMemoryScore, appointmentsMemory, memoryImpact)
-//        progressMemory.progress = memoryScore
-//
-//        // Calculate Cognitive Score
-//        val problemSolvingScore = sharedPrefs.getFloat("problem_solving_score", 0f)
-//        val languageSkills = sharedPrefs.getInt("language_skills", 0)
-//        val attentionSpan = sharedPrefs.getInt("attention_span", 0)
-//        val decisionMaking = sharedPrefs.getFloat("decision_making", 0f)
-//
-//        val cognitiveScore = calculateCognitiveScore(problemSolvingScore, languageSkills, attentionSpan, decisionMaking)
-//        progressCognitive.progress = cognitiveScore
-//
-//        // Determine Risk Level
-//        val overallRisk = determineRiskLevel(memoryScore, cognitiveScore)
-//        updateRiskLevel(overallRisk)
-//
-//        // Set Recommendations
-//        updateRecommendations(overallRisk)
-//    }
-//
-//    private fun calculateMemoryScore(recentMemory: Float, appointments: Int, impact: Float): Int {
-//        // Implement scoring logic based on memory assessment
-//        val score = ((recentMemory + (3 - appointments) * 3.33 + impact) / 3) * 10
-//        return score.toInt()
-//    }
-//
-//    private fun calculateCognitiveScore(
-//        problemSolving: Float,
-//        language: Int,
-//        attention: Int,
-//        decision: Float
-//    ): Int {
-//        // Implement scoring logic based on cognitive assessment
-//        val languageScore = (3 - language) * 3.33
-//        val attentionScore = (attention.coerceAtMost(60) / 60.0) * 10
-//        return ((problemSolving + languageScore + attentionScore + decision) / 4 * 10).toInt()
-//    }
-//
-//    private fun determineRiskLevel(memoryScore: Int, cognitiveScore: Int): RiskLevel {
-//        val averageScore = (memoryScore + cognitiveScore) / 2
-//        return when {
-//            averageScore >= 80 -> RiskLevel.LOW
-//            averageScore >= 60 -> RiskLevel.MODERATE
-//            else -> RiskLevel.HIGH
-//        }
-//    }
-//
-//    private fun updateRiskLevel(risk: RiskLevel) {
-//        textViewRiskLevel.text = risk.toString()
-//        textViewRiskLevel.setTextColor(
-//            when (risk) {
-//                RiskLevel.LOW -> getColor(android.R.color.holo_green_dark)
-//                RiskLevel.MODERATE -> getColor(android.R.color.holo_orange_dark)
-//                RiskLevel.HIGH -> getColor(android.R.color.holo_red_dark)
-//            }
-//        )
-//    }
-//
-//    private fun updateRecommendations(risk: RiskLevel) {
-//        val recommendations = when (risk) {
-//            RiskLevel.LOW -> """
-//                Your assessment indicates a low risk for Alzheimer's disease. To maintain cognitive health:
-//                • Stay physically active
-//                • Maintain social connections
-//                • Challenge your mind with puzzles and new learning
-//                • Continue regular health check-ups
-//            """.trimIndent()
-//
-//            RiskLevel.MODERATE -> """
-//                Your assessment shows some risk factors for cognitive decline. Recommended actions:
-//                • Consult with a healthcare provider
-//                • Increase cognitive exercises
-//                • Monitor memory changes
-//                • Consider lifestyle modifications
-//                • Regular medical check-ups
-//            """.trimIndent()
-//
-//            RiskLevel.HIGH -> """
-//                Your assessment indicates higher risk factors. Important next steps:
-//                • Schedule an appointment with a neurologist
-//                • Comprehensive medical evaluation
-//                • Regular monitoring of symptoms
-//                • Family support system engagement
-//                • Consider medication evaluation
-//            """.trimIndent()
-//        }
-//
-//        textViewRecommendations.text = recommendations
-//    }
-//
-//    private fun shareResults() {
-//        val shareIntent = Intent().apply {
-//            action = Intent.ACTION_SEND
-//            type = "text/plain"
-//            putExtra(Intent.EXTRA_SUBJECT, "Alzheimer's Assessment Results")
-//            putExtra(Intent.EXTRA_TEXT, """
-//                Alzheimer's Assessment Results:
-//                Risk Level: ${textViewRiskLevel.text}
-//                Memory Score: ${progressMemory.progress}%
-//                Cognitive Score: ${progressCognitive.progress}%
-//
-//                ${textViewRecommendations.text}
-//            """.trimIndent())
-//        }
-//        startActivity(Intent.createChooser(shareIntent, "Share results via"))
-//    }
-//
-//    private fun startOver() {
-//        // Clear saved data
-//        getSharedPreferences("AlzheimerAssessment", MODE_PRIVATE)
-//            .edit()
-//            .clear()
-//            .apply()
-//
-//        // Return to first screen
-//        val intent = Intent(this, PatientDetailsActivity::class.java)
-//        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//        startActivity(intent)
-//    }
-//
-//    private enum class RiskLevel {
-//        LOW, MODERATE, HIGH
-//    }
-//}
+package com.peter.rgr
+
+import android.content.Intent
+import android.graphics.Color
+import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.lifecycle.ViewModelProvider
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.peter.rgr.data.PatientDetails
+import com.peter.rgr.viewmodel.ResultsViewModel
+
+class ResultsActivity : AppCompatActivity() {
+
+    private lateinit var viewModel: ResultsViewModel
+    private lateinit var pieChart: PieChart
+    private lateinit var textViewRiskPercentage: TextView
+    private lateinit var textViewRiskLevel: TextView
+    private lateinit var textViewRecommendation: TextView
+    private lateinit var cardViewRecommendation: CardView
+    private lateinit var buttonHome: Button
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_results)
+        
+        viewModel = ViewModelProvider(this)[ResultsViewModel::class.java]
+        
+        initializeViews()
+        observeViewModel()
+        setupNavigation()
+        
+        // Calculate prediction based on collected data
+        viewModel.calculatePrediction()
+    }
+    
+    private fun initializeViews() {
+        pieChart = findViewById(R.id.pieChart)
+        textViewRiskPercentage = findViewById(R.id.textViewRiskPercentage)
+        textViewRiskLevel = findViewById(R.id.textViewRiskLevel)
+        textViewRecommendation = findViewById(R.id.textViewRecommendation)
+        cardViewRecommendation = findViewById(R.id.cardViewRecommendation)
+        buttonHome = findViewById(R.id.buttonHome)
+    }
+    
+    private fun observeViewModel() {
+        viewModel.predictionResult.observe(this) { result ->
+            updateChartAndDisplay(result)
+        }
+    }
+    
+    private fun updateChartAndDisplay(riskPercentage: Float) {
+        // Update text views
+        textViewRiskPercentage.text = "${riskPercentage.toInt()}%"
+        
+        // Set risk level text and color
+        when {
+            riskPercentage < 30 -> {
+                textViewRiskLevel.text = "Low Risk"
+                textViewRiskLevel.setTextColor(Color.parseColor("#4CAF50")) // Green
+                textViewRecommendation.text = "Your risk for Alzheimer's seems low based on the data provided. Continue maintaining a healthy lifestyle. Consider regular cognitive assessments as you age."
+            }
+            riskPercentage < 60 -> {
+                textViewRiskLevel.text = "Moderate Risk"
+                textViewRiskLevel.setTextColor(Color.parseColor("#FFA000")) // Amber
+                textViewRecommendation.text = "Your results indicate a moderate risk. Consider consulting with a neurologist for further assessment. Lifestyle modifications may help reduce risk factors."
+            }
+            else -> {
+                textViewRiskLevel.text = "High Risk"
+                textViewRiskLevel.setTextColor(Color.parseColor("#F44336")) // Red
+                textViewRecommendation.text = "Your results indicate a high risk. We strongly recommend consulting with a healthcare professional specializing in neurological disorders for a comprehensive evaluation."
+            }
+        }
+        
+        // Setup pie chart
+        setupPieChart(riskPercentage)
+    }
+    
+    private fun setupPieChart(riskPercentage: Float) {
+        val entries = ArrayList<PieEntry>()
+        entries.add(PieEntry(riskPercentage, "Risk"))
+        entries.add(PieEntry(100f - riskPercentage, ""))
+        
+        val dataSet = PieDataSet(entries, "")
+        
+        // Set colors based on risk level
+        val colors = ArrayList<Int>()
+        val riskColor = when {
+            riskPercentage < 30 -> Color.parseColor("#4CAF50") // Green
+            riskPercentage < 60 -> Color.parseColor("#FFA000") // Amber
+            else -> Color.parseColor("#F44336") // Red
+        }
+        colors.add(riskColor)
+        colors.add(Color.parseColor("#EEEEEE")) // Light grey for remaining portion
+        
+        dataSet.colors = colors
+        dataSet.setDrawValues(false)
+        
+        val data = PieData(dataSet)
+        pieChart.data = data
+        
+        // Configure chart appearance
+        pieChart.description.isEnabled = false
+        pieChart.legend.isEnabled = false
+        pieChart.setDrawEntryLabels(false)
+        pieChart.holeRadius = 80f
+        pieChart.setHoleColor(Color.TRANSPARENT)
+        pieChart.setDrawCenterText(false)
+        pieChart.isRotationEnabled = false
+        pieChart.isHighlightPerTapEnabled = false
+        
+        // Animate chart
+        pieChart.animateY(1000)
+        pieChart.invalidate()
+    }
+    
+    private fun setupNavigation() {
+        buttonHome.setOnClickListener {
+            val intent = Intent(this, PatientDetails::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            finish()
+        }
+    }
+}

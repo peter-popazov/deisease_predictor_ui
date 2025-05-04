@@ -48,7 +48,8 @@ class MemoryTestActivity : AppCompatActivity() {
             }
 
             nextButton.setOnClickListener {
-                // Navigate to the next activity
+                val intent = Intent(this, ResultsActivity::class.java)
+                startActivity(intent)
                 finish()
             }
 
@@ -110,16 +111,6 @@ class MemoryTestActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.e("MemoryTestActivity", "Error checking answer", e)
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun setupNavigation() {
-        buttonNext.setOnClickListener {
-            // todo peoceed to result activity
-//            val intent = Intent(this, MemoryTestActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-
         }
     }
 }
