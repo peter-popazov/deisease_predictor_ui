@@ -6,8 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.peter.rgr.data.PatientDetails
 import com.peter.rgr.repository.PatientDetailsRepository
-import kotlin.Float
-import kotlin.math.pow
 import kotlin.math.round
 
 class PatientDetailsViewModel(application: Application) : AndroidViewModel(application) {
@@ -16,19 +14,16 @@ class PatientDetailsViewModel(application: Application) : AndroidViewModel(appli
     private val _patientDetails = MutableLiveData<PatientDetails>()
     val patientDetails: LiveData<PatientDetails> = _patientDetails
 
-    private val _bmi = MutableLiveData<Double>()
-    val bmi: LiveData<Double> = _bmi
+    private val _bmi = MutableLiveData<Double?>()
+    val bmi: LiveData<Double?> = _bmi
 
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
     init {
-        loadPatientDetails()
-    }
-
-    private fun loadPatientDetails() {
-        _patientDetails.value = repository.getPatientDetails()
-        calculateBMI()
+        // Reset patient details to default values on startup
+        _patientDetails.value = PatientDetails()
+        _bmi.value = 0.0 // Set initial BMI to null
     }
 
     fun updatePatientDetails(
@@ -53,14 +48,16 @@ class PatientDetailsViewModel(application: Application) : AndroidViewModel(appli
 
     private fun calculateBMI() {
         val current = _patientDetails.value ?: return
-        if (current.height > 0) {
-            val heightInMeters = current.height / 100
-            val bmi = current.weight / (heightInMeters.pow(2))
-            _bmi.value = (round(bmi * 10) / 10).toDouble()
+        val h = current.height
+        val w = current.weight
+        if (h > 0 && w > 0) {
+            val bmiValue = w / ((h / 100) * (h / 100))
+            _bmi.value = (round(bmiValue * 10) / 10).toDouble()
         } else {
             _bmi.value = 0.0
         }
     }
+
 
     fun validateInputs(): Boolean {
         val current = _patientDetails.value ?: return false

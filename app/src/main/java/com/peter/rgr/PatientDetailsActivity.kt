@@ -2,21 +2,23 @@ package com.peter.rgr
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.peter.rgr.viewmodel.PatientDetailsViewModel
 
 class PatientDetailsActivity : AppCompatActivity() {
+
     private lateinit var viewModel: PatientDetailsViewModel
-    
+
     private lateinit var editTextAge: TextInputEditText
     private lateinit var spinnerGender: AutoCompleteTextView
     private lateinit var editTextHeight: TextInputEditText
@@ -29,13 +31,14 @@ class PatientDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_patient_details)
+
         viewModel = ViewModelProvider(this)[PatientDetailsViewModel::class.java]
+
         try {
-            Log.d("PatientDetailsActivity", "Starting onCreate")
             initializeViews()
             setupSpinners()
-            observeViewModel()
             setupFieldListeners()
+            observeViewModel()
             setupNavigation()
         } catch (e: Exception) {
             Log.e("PatientDetailsActivity", "Initialization error", e)
@@ -43,9 +46,8 @@ class PatientDetailsActivity : AppCompatActivity() {
             finish()
         }
     }
-    
+
     private fun initializeViews() {
-        editTextAge = findViewById(R.id.editTextAge)
         editTextAge = findViewById(R.id.editTextAge)
         spinnerGender = findViewById(R.id.spinnerGender)
         editTextHeight = findViewById(R.id.editTextHeight)
@@ -55,91 +57,70 @@ class PatientDetailsActivity : AppCompatActivity() {
         textViewBMI = findViewById(R.id.textViewBMI)
         buttonNext = findViewById(R.id.buttonNext)
     }
-    
+
     private fun setupSpinners() {
-        // Gender options
-        val genderAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, 
-            arrayOf("Male", "Female"))
-        spinnerGender.setAdapter(genderAdapter)
-        
-        // Education options
-        val educationAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line,
-            arrayOf("None", "High School", "Bachelor's", "Higher"))
-        spinnerEducation.setAdapter(educationAdapter)
-        
-        // Ethnicity options
-        val ethnicityAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line,
-            arrayOf("Caucasian", "African American", "Asian", "Other"))
-        spinnerEthnicity.setAdapter(ethnicityAdapter)
+        spinnerGender.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line,
+            arrayOf("Male", "Female")))
+
+        spinnerEducation.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line,
+            arrayOf("None", "High School", "Bachelor's", "Higher")))
+
+        spinnerEthnicity.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line,
+            arrayOf("Caucasian", "African American", "Asian", "Other")))
     }
-    
+
     private fun setupFieldListeners() {
-        editTextAge.addTextChangedListener(object : android.text.TextWatcher {
+        editTextAge.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val age = s.toString().toIntOrNull()
+                if (age == null || age < 0) {
+                    editTextAge.error = "Invalid age"
+                } else {
+                    viewModel.updatePatientDetails(age = age)
+                }
+            }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: android.text.Editable?) {
-                viewModel.updatePatientDetails(age = s.toString().toIntOrNull())
-            }
         })
 
-        spinnerGender.setOnItemClickListener { _, _, _, _ ->
-            viewModel.updatePatientDetails(gender = spinnerGender.text.toString())
+        editTextHeight.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val height = s.toString().toFloatOrNull()
+                viewModel.updatePatientDetails(height = height)
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        editTextWeight.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val weight = s.toString().toFloatOrNull()
+                viewModel.updatePatientDetails(weight = weight)
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        spinnerGender.setOnItemClickListener { parent, _, position, _ ->
+            val gender = parent.getItemAtPosition(position).toString()
+            viewModel.updatePatientDetails(gender = gender)
         }
 
-        editTextHeight.addTextChangedListener(object : android.text.TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: android.text.Editable?) {
-                viewModel.updatePatientDetails(height = s.toString().toFloatOrNull())
-            }
-        })
-
-        editTextWeight.addTextChangedListener(object : android.text.TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: android.text.Editable?) {
-                viewModel.updatePatientDetails(weight = s.toString().toFloatOrNull())
-            }
-        })
-
-        spinnerEducation.setOnItemClickListener { _, _, _, _ ->
-            viewModel.updatePatientDetails(educationLevel = spinnerEducation.text.toString())
+        spinnerEducation.setOnItemClickListener { parent, _, position, _ ->
+            val education = parent.getItemAtPosition(position).toString()
+            viewModel.updatePatientDetails(educationLevel = education)
         }
 
-        spinnerEthnicity.setOnItemClickListener { _, _, _, _ ->
-            viewModel.updatePatientDetails(ethnicity = spinnerEthnicity.text.toString())
+        spinnerEthnicity.setOnItemClickListener { parent, _, position, _ ->
+            val ethnicity = parent.getItemAtPosition(position).toString()
+            viewModel.updatePatientDetails(ethnicity = ethnicity)
         }
     }
 
     private fun observeViewModel() {
-        viewModel.patientDetails.observe(this, Observer { details ->
-            if (editTextAge.text.toString() != (if (details.age > 0) details.age.toString() else "")) {
-                editTextAge.setText(if (details.age > 0) details.age.toString() else "")
-            }
-            if (spinnerGender.text.toString() != details.gender) {
-                spinnerGender.setText(details.gender, false)
-            }
-            if (editTextHeight.text.toString() != (if (details.height > 0) details.height.toString() else "")) {
-                editTextHeight.setText(if (details.height > 0) details.height.toString() else "")
-            }
-            if (editTextWeight.text.toString() != (if (details.weight > 0) details.weight.toString() else "")) {
-                editTextWeight.setText(if (details.weight > 0) details.weight.toString() else "")
-            }
-            if (spinnerEducation.text.toString() != details.educationLevel) {
-                spinnerEducation.setText(details.educationLevel, false)
-            }
-            if (spinnerEthnicity.text.toString() != details.ethnicity) {
-                spinnerEthnicity.setText(details.ethnicity, false)
-            }
-        })
-
-        viewModel.bmi.observe(this, Observer { bmi ->
-            textViewBMI.text = if (bmi > 0) "BMI: $bmi" else "BMI: --"
-        })
-
-        viewModel.error.observe(this, Observer { error ->
-            error?.let { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
-        })
+        viewModel.bmi.observe(this) { bmi ->
+            textViewBMI.text = "BMI: %.2f".format(bmi)
+        }
     }
 
     private fun setupNavigation() {
@@ -151,4 +132,4 @@ class PatientDetailsActivity : AppCompatActivity() {
             }
         }
     }
-} 
+}
