@@ -33,11 +33,12 @@
             android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
 
         <activity
-            android:name=".ResultsActivity"
-            android:exported="false" />
+            android:name=".CognitiveSymptomsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
 
         <activity
-            android:name=".CognitiveSymptomsActivity"
+            android:name=".MemoryTestActivity"
             android:exported="false"
             android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
 

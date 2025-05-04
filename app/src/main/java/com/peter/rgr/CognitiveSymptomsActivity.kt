@@ -1,7 +1,10 @@
 package com.peter.rgr
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.CompoundButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -56,10 +59,17 @@ class CognitiveSymptomsActivity : AppCompatActivity() {
 
     private fun setupNavigation() {
         buttonNext.setOnClickListener {
-            if (validateInputs()) {
-                saveCognitiveData()
-//                val intent = Intent(this, AdditionalInfoActivity::class.java)
-//                startActivity(intent)
+            try {
+                if (validateInputs()) {
+                    saveCognitiveData()
+                    Log.d("CognitiveSymptomsActivity", "Navigating to MemoryTestActivity")
+                    val intent = Intent(this, MemoryTestActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                }
+            } catch (e: Exception) {
+                Log.e("CognitiveSymptomsActivity", "Error navigating to MemoryTestActivity", e)
+                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
 
