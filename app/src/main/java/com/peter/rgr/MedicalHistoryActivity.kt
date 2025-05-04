@@ -26,7 +26,6 @@ class MedicalHistoryActivity : AppCompatActivity() {
     private lateinit var checkBoxHypertension: MaterialCheckBox
     private lateinit var checkBoxCardiovascularDisease: MaterialCheckBox
     private lateinit var checkBoxHeadInjury: MaterialCheckBox
-    private lateinit var checkBoxAlcoholConsumption: MaterialCheckBox
     private lateinit var editTextSystolicBP: TextInputEditText
     private lateinit var editTextDiastolicBP: TextInputEditText
     private lateinit var sliderAlcohol: Slider
@@ -37,13 +36,6 @@ class MedicalHistoryActivity : AppCompatActivity() {
     private lateinit var buttonNext: MaterialButton
     private lateinit var buttonPrevious: MaterialButton
     private lateinit var progressBar: LinearProgressIndicator
-    private lateinit var checkBoxConfusion: MaterialCheckBox
-    private lateinit var checkBoxDisorientation: MaterialCheckBox
-    private lateinit var checkBoxForgetfulness: MaterialCheckBox
-    private lateinit var checkBoxDepression: MaterialCheckBox
-    private lateinit var checkBoxMemoryComplaints: MaterialCheckBox
-    private lateinit var checkBoxPersonalityChanges: MaterialCheckBox
-    private lateinit var checkBoxDifficultyCompletingTasks: MaterialCheckBox
 
     private var systolicBPWatcher: TextWatcher? = null
     private var diastolicBPWatcher: TextWatcher? = null
@@ -142,11 +134,6 @@ class MedicalHistoryActivity : AppCompatActivity() {
             viewModel.updateMedicalHistory(headInjury = isChecked)
         }
 
-        alcoholConsumptionCheckedChangeListener =
-            CompoundButton.OnCheckedChangeListener { _, isChecked ->
-                viewModel.updateMedicalHistory(alcoholConsumption = isChecked)
-            }
-
         confusionCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
             viewModel.updateMedicalHistory(confusion = isChecked)
         }
@@ -180,6 +167,13 @@ class MedicalHistoryActivity : AppCompatActivity() {
                 viewModel.updateMedicalHistory(difficultyCompletingTasks = isChecked)
             }
 
+        // Add slider listener for alcohol consumption
+        sliderAlcohol.addOnChangeListener { slider, value, fromUser ->
+            val alcoholValue = value.toInt()
+            textAlcoholValue.text = "$alcoholValue units"
+            viewModel.updateMedicalHistory(alcoholConsumption = alcoholValue)
+        }
+
         // Attach listeners
         editTextSystolicBP.addTextChangedListener(systolicBPWatcher)
         editTextDiastolicBP.addTextChangedListener(diastolicBPWatcher)
@@ -188,20 +182,6 @@ class MedicalHistoryActivity : AppCompatActivity() {
         checkBoxHypertension.setOnCheckedChangeListener(hypertensionCheckedChangeListener)
         checkBoxCardiovascularDisease.setOnCheckedChangeListener(cardiovascularCheckedChangeListener)
         checkBoxHeadInjury.setOnCheckedChangeListener(headInjuryCheckedChangeListener)
-        checkBoxAlcoholConsumption.setOnCheckedChangeListener(
-            alcoholConsumptionCheckedChangeListener
-        )
-        checkBoxConfusion.setOnCheckedChangeListener(confusionCheckedChangeListener)
-        checkBoxDisorientation.setOnCheckedChangeListener(disorientationCheckedChangeListener)
-        checkBoxForgetfulness.setOnCheckedChangeListener(forgetfulnessCheckedChangeListener)
-        checkBoxDepression.setOnCheckedChangeListener(depressionCheckedChangeListener)
-        checkBoxMemoryComplaints.setOnCheckedChangeListener(memoryComplaintsCheckedChangeListener)
-        checkBoxPersonalityChanges.setOnCheckedChangeListener(
-            personalityChangesCheckedChangeListener
-        )
-        checkBoxDifficultyCompletingTasks.setOnCheckedChangeListener(
-            difficultyCompletingTasksCheckedChangeListener
-        )
 
 
     }
@@ -217,29 +197,13 @@ class MedicalHistoryActivity : AppCompatActivity() {
                 checkBoxHypertension.setOnCheckedChangeListener(null)
                 checkBoxCardiovascularDisease.setOnCheckedChangeListener(null)
                 checkBoxHeadInjury.setOnCheckedChangeListener(null)
-                checkBoxAlcoholConsumption.setOnCheckedChangeListener(null)
-                checkBoxConfusion.setOnCheckedChangeListener(null)
-                checkBoxDisorientation.setOnCheckedChangeListener(null)
-                checkBoxForgetfulness.setOnCheckedChangeListener(null)
-                checkBoxDepression.setOnCheckedChangeListener(null)
-                checkBoxMemoryComplaints.setOnCheckedChangeListener(null)
-                checkBoxPersonalityChanges.setOnCheckedChangeListener(null)
-                checkBoxDifficultyCompletingTasks.setOnCheckedChangeListener(null)
+                sliderAlcohol.clearOnChangeListeners()
 
                 // Update UI
                 checkBoxDiabetes.isChecked = medicalHistory.diabetes
                 checkBoxHypertension.isChecked = medicalHistory.hypertension
                 checkBoxCardiovascularDisease.isChecked = medicalHistory.cardiovascularDisease
                 checkBoxHeadInjury.isChecked = medicalHistory.headInjury
-                checkBoxAlcoholConsumption.isChecked = medicalHistory.alcoholConsumption
-                checkBoxConfusion.isChecked = medicalHistory.confusion
-                checkBoxDisorientation.isChecked = medicalHistory.disorientation
-                checkBoxForgetfulness.isChecked = medicalHistory.forgetfulness
-                checkBoxDepression.isChecked = medicalHistory.depression
-                checkBoxMemoryComplaints.isChecked = medicalHistory.memoryComplaints
-                checkBoxPersonalityChanges.isChecked = medicalHistory.personalityChanges
-                checkBoxDifficultyCompletingTasks.isChecked =
-                    medicalHistory.difficultyCompletingTasks
 
                 editTextSystolicBP.setText(
                     if (medicalHistory.systolicBP > 0) medicalHistory.systolicBP.toString() else ""
@@ -248,6 +212,9 @@ class MedicalHistoryActivity : AppCompatActivity() {
                     if (medicalHistory.diastolicBP > 0) medicalHistory.diastolicBP.toString() else ""
                 )
 
+                // Update alcohol slider value
+                sliderAlcohol.value = medicalHistory.alcoholConsumption.toFloat()
+                textAlcoholValue.text = "${medicalHistory.alcoholConsumption} units"
 
                 // Reattach listeners
                 editTextSystolicBP.addTextChangedListener(systolicBPWatcher)
@@ -259,35 +226,9 @@ class MedicalHistoryActivity : AppCompatActivity() {
                     cardiovascularCheckedChangeListener
                 )
                 checkBoxHeadInjury.setOnCheckedChangeListener(headInjuryCheckedChangeListener)
-                checkBoxAlcoholConsumption.setOnCheckedChangeListener(
-                    alcoholConsumptionCheckedChangeListener
-                )
-                checkBoxConfusion.setOnCheckedChangeListener(confusionCheckedChangeListener)
-                checkBoxDisorientation.setOnCheckedChangeListener(
-                    disorientationCheckedChangeListener
-                )
-                checkBoxForgetfulness.setOnCheckedChangeListener(forgetfulnessCheckedChangeListener)
-                checkBoxDepression.setOnCheckedChangeListener(depressionCheckedChangeListener)
-                checkBoxMemoryComplaints.setOnCheckedChangeListener(
-                    memoryComplaintsCheckedChangeListener
-                )
-                checkBoxPersonalityChanges.setOnCheckedChangeListener(
-                    personalityChangesCheckedChangeListener
-                )
-                checkBoxDifficultyCompletingTasks.setOnCheckedChangeListener(
-                    difficultyCompletingTasksCheckedChangeListener
-                )
             } catch (e: Exception) {
                 Log.e("MedicalHistoryActivity", "Error updating UI", e)
                 Toast.makeText(this, "Error updating UI: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        viewModel.progress.observe(this, Observer { progress ->
-            try {
-                progressBar.progress = progress
-            } catch (e: Exception) {
-                Log.e("MedicalHistoryActivity", "Error updating progress", e)
             }
         })
 

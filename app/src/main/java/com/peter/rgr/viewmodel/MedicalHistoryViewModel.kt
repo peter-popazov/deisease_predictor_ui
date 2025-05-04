@@ -20,24 +20,18 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
     private val _medicalHistory = MutableLiveData<MedicalHistory>()
     val medicalHistory: LiveData<MedicalHistory> = _medicalHistory
 
-    private val _progress = MutableLiveData<Int>()
-    val progress: LiveData<Int> = _progress
-
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> = _error
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String> = _error as LiveData<String>
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
-
-    private val totalFields = 12 // Updated to include all fields
 
     init {
         loadMedicalHistory()
     }
 
     private fun loadMedicalHistory() {
-        _medicalHistory.value = repository.getMedicalHistory()
-        updateProgress()
+//        _medicalHistory.value = repository.getMedicalHistory()
     }
 
     fun updateMedicalHistory(
@@ -47,7 +41,7 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
         headInjury: Boolean? = null,
         systolicBP: Int? = null,
         diastolicBP: Int? = null,
-        alcoholConsumption: Boolean? = null,
+        alcoholConsumption: Int? = null,
         confusion: Boolean? = null,
         disorientation: Boolean? = null,
         forgetfulness: Boolean? = null,
@@ -73,29 +67,6 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
             personalityChanges = personalityChanges ?: current.personalityChanges,
             difficultyCompletingTasks = difficultyCompletingTasks ?: current.difficultyCompletingTasks
         )
-        updateProgress()
-    }
-
-    private fun updateProgress() {
-        val current = _medicalHistory.value ?: return
-        var filledFields = 0
-
-        if (current.systolicBP > 0) filledFields++
-        if (current.diastolicBP > 0) filledFields++
-        if (current.diabetes) filledFields++
-        if (current.hypertension) filledFields++
-        if (current.cardiovascularDisease) filledFields++
-        if (current.headInjury) filledFields++
-        if (current.alcoholConsumption) filledFields++
-        if (current.confusion) filledFields++
-        if (current.disorientation) filledFields++
-        if (current.forgetfulness) filledFields++
-        if (current.depression) filledFields++
-        if (current.memoryComplaints) filledFields++
-        if (current.personalityChanges) filledFields++
-        if (current.difficultyCompletingTasks) filledFields++
-
-        _progress.value = (filledFields.toFloat() / totalFields * 100).toInt()
     }
 
     fun validateInputs(): Boolean {

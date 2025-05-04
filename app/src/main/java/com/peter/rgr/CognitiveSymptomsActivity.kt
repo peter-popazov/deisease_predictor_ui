@@ -5,7 +5,6 @@ import android.widget.CompoundButton
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
-import com.google.android.material.progressindicator.LinearProgressIndicator
 import org.json.JSONObject
 import java.io.File
 import java.io.FileWriter
@@ -20,10 +19,6 @@ class CognitiveSymptomsActivity : AppCompatActivity() {
     private lateinit var checkboxDifficultyCompletingTasks: MaterialCheckBox
     private lateinit var buttonNext: MaterialButton
     private lateinit var buttonPrevious: MaterialButton
-    private lateinit var progressBar: LinearProgressIndicator
-
-    private val totalFields = 7 // Total number of checkboxes
-    private var checkedFields = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +27,6 @@ class CognitiveSymptomsActivity : AppCompatActivity() {
         initializeViews()
         setupCheckboxListeners()
         setupNavigation()
-        updateProgress()
     }
 
     private fun initializeViews() {
@@ -45,13 +39,11 @@ class CognitiveSymptomsActivity : AppCompatActivity() {
         checkboxDifficultyCompletingTasks = findViewById(R.id.checkboxDifficultyCompletingTasks)
         buttonNext = findViewById(R.id.buttonNext)
         buttonPrevious = findViewById(R.id.buttonPrevious)
-        progressBar = findViewById(R.id.progressBar)
     }
 
     private fun setupCheckboxListeners() {
-        val checkboxListener = { _: MaterialCheckBox, _: Boolean ->
-            updateProgress()
-        }
+        // No need to update progress, just keeping the callback structure
+        val checkboxListener = { _: MaterialCheckBox, _: Boolean -> }
 
         checkboxConfusion.setOnCheckedChangeListener(checkboxListener as ((CompoundButton, Boolean) -> Unit)?)
         checkboxDisorientation.setOnCheckedChangeListener(checkboxListener)
@@ -60,20 +52,6 @@ class CognitiveSymptomsActivity : AppCompatActivity() {
         checkboxMemoryComplaints.setOnCheckedChangeListener(checkboxListener)
         checkboxPersonalityChanges.setOnCheckedChangeListener(checkboxListener)
         checkboxDifficultyCompletingTasks.setOnCheckedChangeListener(checkboxListener)
-    }
-
-    private fun updateProgress() {
-        checkedFields = 0
-        if (checkboxConfusion.isChecked) checkedFields++
-        if (checkboxDisorientation.isChecked) checkedFields++
-        if (checkboxForgetfulness.isChecked) checkedFields++
-        if (checkboxDepression.isChecked) checkedFields++
-        if (checkboxMemoryComplaints.isChecked) checkedFields++
-        if (checkboxPersonalityChanges.isChecked) checkedFields++
-        if (checkboxDifficultyCompletingTasks.isChecked) checkedFields++
-
-        val progress = (checkedFields.toFloat() / totalFields.toFloat() * 100).toInt()
-        progressBar.progress = progress
     }
 
     private fun setupNavigation() {

@@ -21,7 +21,7 @@
             app:trackColor="#E8F0FE"
             app:trackCornerRadius="4dp" />
 
-        <!-- Header Section with Gradient Background -->
+        <!-- Header Section -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                 android:orientation="vertical"
                 android:padding="24dp">
 
-                <!-- Medical Conditions Section -->
+                <!-- Medical Conditions -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -114,7 +114,7 @@
                         app:buttonTint="#1A73E8" />
                 </LinearLayout>
 
-                <!-- Blood Pressure Section -->
+                <!-- Blood Pressure -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -124,7 +124,6 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <!-- Systolic and Diastolic BP in same row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -170,6 +169,7 @@
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
+                <!-- Lifestyle -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -179,16 +179,14 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <!-- Lifestyle Section -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:text="Alcohol Consumption"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp" />
 
-                <!-- Alcohol Consumption -->
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -214,7 +212,8 @@
                             android:valueFrom="0"
                             android:valueTo="10"
                             app:thumbColor="#1A73E8"
-                            app:trackColor="#1A73E8"
+                            app:trackColorActive="#1A73E8"
+                            app:trackColorInactive="#D1E3FA"
                             app:trackHeight="4dp" />
 
                         <TextView
@@ -284,6 +283,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="none" />
                 </com.google.android.material.textfield.TextInputLayout>
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -323,6 +323,5 @@
                 app:cornerRadius="12dp"
                 app:elevation="4dp" />
         </LinearLayout>
-
     </LinearLayout>
-</ScrollView> 
+</ScrollView>

@@ -94,7 +94,7 @@ class MedicalHistoryRepository(
                 headInjury = json.optBoolean("headInjury", false),
                 systolicBP = json.optInt("systolicBP", 0),
                 diastolicBP = json.optInt("diastolicBP", 0),
-                alcoholConsumption = json.optBoolean("alcoholConsumption", false),
+                alcoholConsumption = json.optInt("alcoholConsumption", 0),
                 confusion = json.optBoolean("confusion", false),
                 disorientation = json.optBoolean("disorientation", false),
                 forgetfulness = json.optBoolean("forgetfulness", false),

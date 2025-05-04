@@ -16,7 +16,7 @@ data class MedicalHistoryRequest(
     val headInjury: Boolean,
 
     @SerializedName("alcohol_consumption")
-    val alcoholConsumption: Boolean,
+    val alcoholConsumption: Int,
 
     @SerializedName("systolic_bp")
     val systolicBP: Int,

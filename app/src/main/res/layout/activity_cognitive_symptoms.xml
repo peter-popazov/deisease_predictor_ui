@@ -11,16 +11,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Progress Bar -->
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/progressBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:indicatorColor="#1A73E8"
-            app:trackColor="#E8F0FE"
-            app:trackCornerRadius="4dp" />
-
         <!-- Header Section with Gradient Background -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -188,4 +178,4 @@
                 android:backgroundTint="#0288D1"/>
         </LinearLayout>
     </LinearLayout>
-</ScrollView> 
+</ScrollView>

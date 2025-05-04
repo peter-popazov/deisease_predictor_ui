@@ -13,13 +13,8 @@ class CognitiveSymptomsViewModel(application: Application) : AndroidViewModel(ap
     private val _cognitiveSymptoms = MutableLiveData<CognitiveSymptoms>()
     val cognitiveSymptoms: LiveData<CognitiveSymptoms> = _cognitiveSymptoms
 
-    private val _progress = MutableLiveData<Int>()
-    val progress: LiveData<Int> = _progress
-
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
-
-    private val totalFields = 7
 
     init {
         loadCognitiveSymptoms()
@@ -27,7 +22,6 @@ class CognitiveSymptomsViewModel(application: Application) : AndroidViewModel(ap
 
     private fun loadCognitiveSymptoms() {
         _cognitiveSymptoms.value = repository.getCognitiveSymptoms()
-        updateProgress()
     }
 
     fun updateCognitiveSymptoms(
@@ -49,22 +43,6 @@ class CognitiveSymptomsViewModel(application: Application) : AndroidViewModel(ap
             socialCognitionProblems = socialCognitionProblems ?: current.socialCognitionProblems,
             otherSymptoms = otherSymptoms ?: current.otherSymptoms
         )
-        updateProgress()
-    }
-
-    private fun updateProgress() {
-        val current = _cognitiveSymptoms.value ?: return
-        var filledFields = 0
-
-        if (current.memoryProblems) filledFields++
-        if (current.languageProblems) filledFields++
-        if (current.attentionProblems) filledFields++
-        if (current.executiveFunctionProblems) filledFields++
-        if (current.visuospatialProblems) filledFields++
-        if (current.socialCognitionProblems) filledFields++
-        if (current.otherSymptoms.isNotEmpty()) filledFields++
-
-        _progress.value = (filledFields.toFloat() / totalFields * 100).toInt()
     }
 
     fun validateInputs(): Boolean {
@@ -90,4 +68,4 @@ class CognitiveSymptomsViewModel(application: Application) : AndroidViewModel(ap
             _error.value = e.message
         }
     }
-} 
+}
