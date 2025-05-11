@@ -42,7 +42,8 @@ class PatientDetailsActivity : AppCompatActivity() {
             setupNavigation()
         } catch (e: Exception) {
             Log.e("PatientDetailsActivity", "Initialization error", e)
-            Toast.makeText(this, "Error initializing activity: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Error initializing activity: ${e.message}", Toast.LENGTH_LONG)
+                .show()
             finish()
         }
     }
@@ -59,14 +60,26 @@ class PatientDetailsActivity : AppCompatActivity() {
     }
 
     private fun setupSpinners() {
-        spinnerGender.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line,
-            arrayOf("Male", "Female")))
+        spinnerGender.setAdapter(
+            ArrayAdapter(
+                this, android.R.layout.simple_dropdown_item_1line,
+                arrayOf("Male", "Female")
+            )
+        )
 
-        spinnerEducation.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line,
-            arrayOf("None", "High School", "Bachelor's", "Higher")))
+        spinnerEducation.setAdapter(
+            ArrayAdapter(
+                this, android.R.layout.simple_dropdown_item_1line,
+                arrayOf("None", "High School", "Bachelor's", "Higher")
+            )
+        )
 
-        spinnerEthnicity.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line,
-            arrayOf("Caucasian", "African American", "Asian", "Other")))
+        spinnerEthnicity.setAdapter(
+            ArrayAdapter(
+                this, android.R.layout.simple_dropdown_item_1line,
+                arrayOf("Caucasian", "African American", "Asian", "Other")
+            )
+        )
     }
 
     private fun setupFieldListeners() {
@@ -79,6 +92,7 @@ class PatientDetailsActivity : AppCompatActivity() {
                     viewModel.updatePatientDetails(age = age)
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -88,6 +102,7 @@ class PatientDetailsActivity : AppCompatActivity() {
                 val height = s.toString().toFloatOrNull()
                 viewModel.updatePatientDetails(height = height)
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -97,6 +112,7 @@ class PatientDetailsActivity : AppCompatActivity() {
                 val weight = s.toString().toFloatOrNull()
                 viewModel.updatePatientDetails(weight = weight)
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -129,6 +145,9 @@ class PatientDetailsActivity : AppCompatActivity() {
                 viewModel.savePatientDetails()
                 val intent = Intent(this, MedicalHistoryActivity::class.java)
                 startActivity(intent)
+            } else {
+                Toast.makeText(this, "Please fill out all required fields.", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }

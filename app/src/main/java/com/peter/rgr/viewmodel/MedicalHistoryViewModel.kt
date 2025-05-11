@@ -10,10 +10,8 @@ import com.peter.rgr.repository.MedicalHistoryRepository
 import kotlinx.coroutines.launch
 
 class MedicalHistoryViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = MedicalHistoryRepository(
-        application
-    )
-    
+    private val repository = MedicalHistoryRepository(application)
+
     private val _medicalHistory = MutableLiveData<MedicalHistory>()
     val medicalHistory: LiveData<MedicalHistory> = _medicalHistory
 
@@ -28,7 +26,8 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
     }
 
     private fun loadMedicalHistory() {
-//        _medicalHistory.value = repository.getMedicalHistory()
+        // Fetch the data from the repository and set it to the LiveData
+//        _medicalHistory.value = repository.getMedicalHistory() // Make sure this returns data
     }
 
     fun updateMedicalHistory(
@@ -39,13 +38,9 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
         systolicBP: Int? = null,
         diastolicBP: Int? = null,
         alcoholConsumption: Int? = null,
-        confusion: Boolean? = null,
-        disorientation: Boolean? = null,
-        forgetfulness: Boolean? = null,
-        depression: Boolean? = null,
-        memoryComplaints: Boolean? = null,
-        personalityChanges: Boolean? = null,
-        difficultyCompletingTasks: Boolean? = null
+        dietQuality: String? = null,
+        sleepQuality: String? = null,
+        smoking: Int? = null
     ) {
         val current = _medicalHistory.value ?: MedicalHistory()
         _medicalHistory.value = current.copy(
@@ -56,25 +51,33 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
             systolicBP = systolicBP ?: current.systolicBP,
             diastolicBP = diastolicBP ?: current.diastolicBP,
             alcoholConsumption = alcoholConsumption ?: current.alcoholConsumption,
-            confusion = confusion ?: current.confusion,
-            disorientation = disorientation ?: current.disorientation,
-            forgetfulness = forgetfulness ?: current.forgetfulness,
-            depression = depression ?: current.depression,
-            memoryComplaints = memoryComplaints ?: current.memoryComplaints,
-            personalityChanges = personalityChanges ?: current.personalityChanges,
-            difficultyCompletingTasks = difficultyCompletingTasks ?: current.difficultyCompletingTasks
+            dietQuality = dietQuality ?: current.dietQuality,
+            sleepQuality = sleepQuality ?: current.sleepQuality,
+            smoking = smoking ?: current.smoking
         )
     }
 
     fun validateInputs(): Boolean {
         val current = _medicalHistory.value ?: return false
-        
+
         if (current.systolicBP <= 0) {
             _error.value = "Please enter systolic blood pressure"
             return false
         }
         if (current.diastolicBP <= 0) {
             _error.value = "Please enter diastolic blood pressure"
+            return false
+        }
+        if (current.dietQuality.isEmpty()) {
+            _error.value = "Please select diet quality"
+            return false
+        }
+        if (current.sleepQuality.isEmpty()) {
+            _error.value = "Please select sleep quality"
+            return false
+        }
+        if (current.smoking == 0) {
+            _error.value = "Please select smoking status"
             return false
         }
         return true

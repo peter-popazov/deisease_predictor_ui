@@ -28,38 +28,12 @@ class MedicalHistoryRepository(context: Context) {
                 put("systolicBP", medicalHistory.systolicBP)
                 put("diastolicBP", medicalHistory.diastolicBP)
                 put("alcoholConsumption", medicalHistory.alcoholConsumption)
-                put("confusion", medicalHistory.confusion)
-                put("disorientation", medicalHistory.disorientation)
-                put("forgetfulness", medicalHistory.forgetfulness)
-                put("depression", medicalHistory.depression)
-                put("memoryComplaints", medicalHistory.memoryComplaints)
-                put("personalityChanges", medicalHistory.personalityChanges)
-                put("difficultyCompletingTasks", medicalHistory.difficultyCompletingTasks)
+                put("dietQuality", medicalHistory.dietQuality)
+                put("sleepQuality", medicalHistory.sleepQuality)
+                put("smoking", medicalHistory.smoking)
             }
-            sharedPreferences.edit() { putString("medical_data", json.toString()) }
+            sharedPreferences.edit().putString("medical_data", json.toString()).apply()
             Log.d(TAG, "Local storage save successful")
-
-            // Save to API
-            Log.d(TAG, "Preparing API request")
-            val request = MedicalHistoryRequest(
-                diabetes = medicalHistory.diabetes,
-                hypertension = medicalHistory.hypertension,
-                cardiovascularDisease = medicalHistory.cardiovascularDisease,
-                headInjury = medicalHistory.headInjury,
-                systolicBP = medicalHistory.systolicBP,
-                diastolicBP = medicalHistory.diastolicBP,
-                alcoholConsumption = medicalHistory.alcoholConsumption,
-                cognitiveSymptoms = CognitiveSymptoms(
-                    confusion = medicalHistory.confusion,
-                    disorientation = medicalHistory.disorientation,
-                    forgetfulness = medicalHistory.forgetfulness,
-                    depression = medicalHistory.depression,
-                    memoryComplaints = medicalHistory.memoryComplaints,
-                    personalityChanges = medicalHistory.personalityChanges,
-                    difficultyCompletingTasks = medicalHistory.difficultyCompletingTasks
-                )
-            )
-            Log.d(TAG, "Sending API request: $request")
 
             Result.success(Unit)
         } catch (e: Exception) {
@@ -82,13 +56,9 @@ class MedicalHistoryRepository(context: Context) {
                 systolicBP = json.optInt("systolicBP", 0),
                 diastolicBP = json.optInt("diastolicBP", 0),
                 alcoholConsumption = json.optInt("alcoholConsumption", 0),
-                confusion = json.optBoolean("confusion", false),
-                disorientation = json.optBoolean("disorientation", false),
-                forgetfulness = json.optBoolean("forgetfulness", false),
-                depression = json.optBoolean("depression", false),
-                memoryComplaints = json.optBoolean("memoryComplaints", false),
-                personalityChanges = json.optBoolean("personalityChanges", false),
-                difficultyCompletingTasks = json.optBoolean("difficultyCompletingTasks", false)
+                dietQuality = json.optString("dietQuality", ""),
+                sleepQuality = json.optString("sleepQuality", ""),
+                smoking = json.optInt("smoking", 0)
             )
         } else {
             Log.d(TAG, "No stored medical history found, returning empty")

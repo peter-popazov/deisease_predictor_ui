@@ -1,11 +1,11 @@
 package com.peter.rgr.data
 
 data class CognitiveSymptoms(
-    val memoryProblems: Boolean = false,
-    val languageProblems: Boolean = false,
-    val attentionProblems: Boolean = false,
-    val executiveFunctionProblems: Boolean = false,
-    val visuospatialProblems: Boolean = false,
-    val socialCognitionProblems: Boolean = false,
-    val otherSymptoms: String = ""
+    val confusion: Boolean = false,
+    val disorientation: Boolean = false,
+    val forgetfulness: Boolean = false,
+    val depression: Boolean = false,
+    val memoryComplaints: Boolean = false,
+    val personalityChanges: Boolean = false,
+    val difficultyCompletingTasks: Boolean = false,
 ) 

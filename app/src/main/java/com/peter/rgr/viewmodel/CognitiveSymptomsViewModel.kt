@@ -31,33 +31,23 @@ class CognitiveSymptomsViewModel(application: Application) : AndroidViewModel(ap
         executiveFunctionProblems: Boolean? = null,
         visuospatialProblems: Boolean? = null,
         socialCognitionProblems: Boolean? = null,
-        otherSymptoms: String? = null
+        difficultyCompletingTasks: Boolean? = null
     ) {
         val current = _cognitiveSymptoms.value ?: CognitiveSymptoms()
         _cognitiveSymptoms.value = current.copy(
-            memoryProblems = memoryProblems ?: current.memoryProblems,
-            languageProblems = languageProblems ?: current.languageProblems,
-            attentionProblems = attentionProblems ?: current.attentionProblems,
-            executiveFunctionProblems = executiveFunctionProblems ?: current.executiveFunctionProblems,
-            visuospatialProblems = visuospatialProblems ?: current.visuospatialProblems,
-            socialCognitionProblems = socialCognitionProblems ?: current.socialCognitionProblems,
-            otherSymptoms = otherSymptoms ?: current.otherSymptoms
+            confusion = memoryProblems ?: current.confusion,
+            disorientation = languageProblems ?: current.disorientation,
+            forgetfulness = attentionProblems ?: current.forgetfulness,
+            depression = executiveFunctionProblems ?: current.depression,
+            memoryComplaints = visuospatialProblems ?: current.memoryComplaints,
+            personalityChanges = socialCognitionProblems ?: current.personalityChanges,
+            difficultyCompletingTasks = difficultyCompletingTasks ?: current.difficultyCompletingTasks
         )
     }
 
     fun validateInputs(): Boolean {
         val current = _cognitiveSymptoms.value ?: return false
-        
-        if (!current.memoryProblems && 
-            !current.languageProblems && 
-            !current.attentionProblems && 
-            !current.executiveFunctionProblems && 
-            !current.visuospatialProblems && 
-            !current.socialCognitionProblems && 
-            current.otherSymptoms.isEmpty()) {
-            _error.value = "Please select at least one symptom or describe other symptoms"
-            return false
-        }
+
         return true
     }
 

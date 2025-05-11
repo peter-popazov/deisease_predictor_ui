@@ -10,34 +10,22 @@ import java.io.FileWriter
 class CognitiveSymptomsRepository(private val context: Context) {
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("AlzheimerAssessment", Context.MODE_PRIVATE)
 
-    fun saveCognitiveSymptoms(symptoms: CognitiveSymptoms) {
+    fun saveCognitiveSymptoms(cognitiveSymptoms: CognitiveSymptoms) {
         try {
             // Save to JSON file
             val symptomsData = JSONObject().apply {
-                put("memoryProblems", symptoms.memoryProblems)
-                put("languageProblems", symptoms.languageProblems)
-                put("attentionProblems", symptoms.attentionProblems)
-                put("executiveFunctionProblems", symptoms.executiveFunctionProblems)
-                put("visuospatialProblems", symptoms.visuospatialProblems)
-                put("socialCognitionProblems", symptoms.socialCognitionProblems)
-                put("otherSymptoms", symptoms.otherSymptoms)
+                put("confusion", cognitiveSymptoms.confusion)
+                put("disorientation", cognitiveSymptoms.disorientation)
+                put("forgetfulness", cognitiveSymptoms.forgetfulness)
+                put("depression", cognitiveSymptoms.depression)
+                put("memory_complaints", cognitiveSymptoms.memoryComplaints)
+                put("personality_changes", cognitiveSymptoms.personalityChanges)
+                put("difficulty_completing_tasks", cognitiveSymptoms.difficultyCompletingTasks)
             }
 
             val file = File(context.filesDir, "cognitive_symptoms.json")
             FileWriter(file).use { writer ->
                 writer.write(symptomsData.toString())
-            }
-
-            // Save to SharedPreferences
-            with(sharedPreferences.edit()) {
-                putBoolean("memoryProblems", symptoms.memoryProblems)
-                putBoolean("languageProblems", symptoms.languageProblems)
-                putBoolean("attentionProblems", symptoms.attentionProblems)
-                putBoolean("executiveFunctionProblems", symptoms.executiveFunctionProblems)
-                putBoolean("visuospatialProblems", symptoms.visuospatialProblems)
-                putBoolean("socialCognitionProblems", symptoms.socialCognitionProblems)
-                putString("otherSymptoms", symptoms.otherSymptoms)
-                apply()
             }
         } catch (e: Exception) {
             throw Exception("Error saving cognitive symptoms: ${e.message}")
@@ -46,13 +34,13 @@ class CognitiveSymptomsRepository(private val context: Context) {
 
     fun getCognitiveSymptoms(): CognitiveSymptoms {
         return CognitiveSymptoms(
-            memoryProblems = sharedPreferences.getBoolean("memoryProblems", false),
-            languageProblems = sharedPreferences.getBoolean("languageProblems", false),
-            attentionProblems = sharedPreferences.getBoolean("attentionProblems", false),
-            executiveFunctionProblems = sharedPreferences.getBoolean("executiveFunctionProblems", false),
-            visuospatialProblems = sharedPreferences.getBoolean("visuospatialProblems", false),
-            socialCognitionProblems = sharedPreferences.getBoolean("socialCognitionProblems", false),
-            otherSymptoms = sharedPreferences.getString("otherSymptoms", "") ?: ""
+            confusion = sharedPreferences.getBoolean("confusion", false),
+            disorientation = sharedPreferences.getBoolean("disorientation", false),
+            forgetfulness = sharedPreferences.getBoolean("forgetfulness", false),
+            depression = sharedPreferences.getBoolean("depression", false),
+            memoryComplaints = sharedPreferences.getBoolean("memoryComplaints", false),
+            personalityChanges = sharedPreferences.getBoolean("personalityChanges", false),
+            difficultyCompletingTasks = sharedPreferences.getBoolean("difficultyCompletingTasks", false)
         )
     }
 } 
