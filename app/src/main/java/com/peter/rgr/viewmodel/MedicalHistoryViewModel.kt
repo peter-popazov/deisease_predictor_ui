@@ -1,11 +1,11 @@
 package com.peter.rgr.viewmodel
 
+import MedicalHistory
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.peter.rgr.data.MedicalHistory
 import com.peter.rgr.repository.MedicalHistoryRepository
 import kotlinx.coroutines.launch
 
@@ -35,12 +35,14 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
         hypertension: Boolean? = null,
         cardiovascularDisease: Boolean? = null,
         headInjury: Boolean? = null,
+        familyHistoryAlzheimers: Boolean? = null,
         systolicBP: Int? = null,
         diastolicBP: Int? = null,
         alcoholConsumption: Int? = null,
-        dietQuality: String? = null,
-        sleepQuality: String? = null,
-        smoking: Int? = null
+        physicalActivity: Int? = null,
+        dietQuality: Int? = 0,
+        sleepQuality: Int? = 0,
+        smoking: Boolean? = false
     ) {
         val current = _medicalHistory.value ?: MedicalHistory()
         _medicalHistory.value = current.copy(
@@ -48,9 +50,11 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
             hypertension = hypertension ?: current.hypertension,
             cardiovascularDisease = cardiovascularDisease ?: current.cardiovascularDisease,
             headInjury = headInjury ?: current.headInjury,
+            familyHistoryAlzheimers = familyHistoryAlzheimers ?: current.familyHistoryAlzheimers,
             systolicBP = systolicBP ?: current.systolicBP,
             diastolicBP = diastolicBP ?: current.diastolicBP,
             alcoholConsumption = alcoholConsumption ?: current.alcoholConsumption,
+            physicalActivity = physicalActivity ?: current.physicalActivity,
             dietQuality = dietQuality ?: current.dietQuality,
             sleepQuality = sleepQuality ?: current.sleepQuality,
             smoking = smoking ?: current.smoking
@@ -68,16 +72,16 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
             _error.value = "Please enter diastolic blood pressure"
             return false
         }
-        if (current.dietQuality.isEmpty()) {
+        if (current.dietQuality <= 0) {
             _error.value = "Please select diet quality"
             return false
         }
-        if (current.sleepQuality.isEmpty()) {
+        if (current.sleepQuality <= 0) {
             _error.value = "Please select sleep quality"
             return false
         }
-        if (current.smoking == 0) {
-            _error.value = "Please select smoking status"
+        if (current.physicalActivity <= 0) {
+            _error.value = "Please enter physical activity level"
             return false
         }
         return true

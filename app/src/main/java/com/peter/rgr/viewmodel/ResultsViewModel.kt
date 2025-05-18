@@ -1,5 +1,6 @@
 package com.peter.rgr.viewmodel
 
+import MedicalHistory
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -7,7 +8,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.peter.rgr.data.CognitiveSymptoms
-import com.peter.rgr.data.MedicalHistory
 import com.peter.rgr.data.PatientDetails
 import com.peter.rgr.repository.CognitiveSymptomsRepository
 import com.peter.rgr.repository.MedicalHistoryRepository
@@ -123,35 +123,37 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
         cognitiveSymptoms: CognitiveSymptoms
     ): JSONObject {
         val requestJson = JSONObject()
-
-        requestJson.put("age", patientDetails.age)
-        requestJson.put("gender", patientDetails.gender)
-        requestJson.put("height", patientDetails.height)
-        requestJson.put("weight", patientDetails.weight)
+        requestJson.put("Age", patientDetails.age)
         requestJson.put(
-            "bmi",
+            "BMI",
             patientDetails.weight / ((patientDetails.height / 100) * (patientDetails.height / 100))
         )
-        requestJson.put("education", patientDetails.educationLevel)
-        requestJson.put("ethnicity", patientDetails.ethnicity)
+        requestJson.put("AlcoholConsumption", medicalHistory.alcoholConsumption * 2)
+        requestJson.put("PhysicalActivity", medicalHistory.physicalActivity)
+        requestJson.put("DietQuality", medicalHistory.dietQuality)
+        requestJson.put("SleepQuality", medicalHistory.sleepQuality)
+        requestJson.put("SystolicBP", medicalHistory.systolicBP)
+        requestJson.put("DiastolicBP", medicalHistory.diastolicBP)
+        requestJson.put("MMSE", memoryTestScore * 6)
 
-        requestJson.put("diabetes", medicalHistory.diabetes)
-        requestJson.put("hypertension", medicalHistory.hypertension)
-        requestJson.put("cardiovascular_disease", medicalHistory.cardiovascularDisease)
-        requestJson.put("head_injury", medicalHistory.headInjury)
-        requestJson.put("systolic_bp", medicalHistory.systolicBP)
-        requestJson.put("diastolic_bp", medicalHistory.diastolicBP)
-        requestJson.put("alcohol_consumption", medicalHistory.alcoholConsumption)
+        requestJson.put("BehavioralProblems", if (memoryTestScore == 0) "Yes" else "No")
+        requestJson.put("CardiovascularDisease", if (medicalHistory.cardiovascularDisease) "Yes" else "No")
+        requestJson.put("Confusion", if (cognitiveSymptoms.confusion) "Yes" else "No")
+        requestJson.put("Depression", if (cognitiveSymptoms.depression) "Yes" else "No")
+        requestJson.put("Diabetes", if (medicalHistory.diabetes) "Yes" else "No")
+        requestJson.put("DifficultyCompletingTasks", if (cognitiveSymptoms.difficultyCompletingTasks) "Yes" else "No")
+        requestJson.put("Disorientation", if (cognitiveSymptoms.disorientation) "Yes" else "No")
+        requestJson.put("EducationLevel", patientDetails.educationLevel)
+        requestJson.put("Ethnicity", patientDetails.ethnicity)
+        requestJson.put("FamilyHistoryAlzheimers", if (medicalHistory.familyHistoryAlzheimers) "Yes" else "No")
+        requestJson.put("Forgetfulness", if (cognitiveSymptoms.forgetfulness) "Yes" else "No")
+        requestJson.put("Gender", patientDetails.gender)
+        requestJson.put("HeadInjury", if (medicalHistory.headInjury) "Yes" else "No")
+        requestJson.put("Hypertension", if (medicalHistory.hypertension) "Yes" else "No")
+        requestJson.put("MemoryComplaints", if (cognitiveSymptoms.memoryComplaints) "Yes" else "No")
+        requestJson.put("PersonalityChanges", if (cognitiveSymptoms.personalityChanges) "Yes" else "No")
+        requestJson.put("Smoking", medicalHistory.smoking)
 
-        requestJson.put("confusion", cognitiveSymptoms.confusion)
-        requestJson.put("disorientation", cognitiveSymptoms.disorientation)
-        requestJson.put("forgetfulness", cognitiveSymptoms.forgetfulness)
-        requestJson.put("depression", cognitiveSymptoms.depression)
-        requestJson.put("memory_complaints", cognitiveSymptoms.memoryComplaints)
-        requestJson.put("personality_changes", cognitiveSymptoms.personalityChanges)
-        requestJson.put("difficulty_completing_tasks", cognitiveSymptoms.difficultyCompletingTasks)
-
-        // Add memory test score
         requestJson.put("memory_test_score", memoryTestScore)
 
         return requestJson

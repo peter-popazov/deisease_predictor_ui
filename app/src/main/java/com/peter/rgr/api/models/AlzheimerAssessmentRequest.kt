@@ -1,7 +1,7 @@
 package com.peter.rgr.api.models
 
+import MedicalHistory
 import com.google.gson.annotations.SerializedName
-import com.peter.rgr.data.MedicalHistory
 
 data class AlzheimerAssessmentRequest(
     // Demographic Information

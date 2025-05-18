@@ -116,8 +116,8 @@ class AlzheimerDataConverter:
                 'SystolicBP': '90-180 mmHg',
                 'DiastolicBP': '60-120 mmHg',
                 'MMSE': '0-30 score',
-                'FunctionalAssessment': '0-10 score',
-                'ADL': '0-10 score'
+                # 'FunctionalAssessment': '0-10 score',
+                # 'ADL': '0-10 score'
             }
             return ranges.get(feature_name, 'Numerical value')
         else:

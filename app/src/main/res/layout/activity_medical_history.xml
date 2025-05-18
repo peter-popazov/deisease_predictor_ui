@@ -11,16 +11,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Progress Bar -->
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/progressBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:indicatorColor="#1A73E8"
-            app:trackColor="#E8F0FE"
-            app:trackCornerRadius="4dp" />
-
         <!-- Header Section -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -120,6 +110,16 @@
                         android:text="Head Injury"
                         android:textSize="16sp"
                         app:buttonTint="#1A73E8" />
+
+                    <!-- New checkbox for family history of Alzheimer's -->
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/checkBoxFamilyHistoryAlzheimers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Family History of Alzheimer's"
+                        android:textSize="16sp"
+                        app:buttonTint="#1A73E8" />
                 </LinearLayout>
 
                 <!-- Blood Pressure -->
@@ -190,9 +190,6 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:stepSize="1"
-                    android:valueFrom="0"
-                    android:valueTo="10"
                     android:layout_marginBottom="16dp"
                     android:text="Alcohol Consumption"
                     android:textColor="?android:attr/textColorPrimary"
@@ -238,7 +235,54 @@
                     </LinearLayout>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Diet Quality -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Physical Activity (hours per week)"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Hours per week"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.slider.Slider
+                            android:id="@+id/sliderPhysicalActivity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:contentDescription="Physical Activity slider"
+                            android:stepSize="1"
+                            android:valueFrom="0"
+                            android:valueTo="10"
+                            app:thumbColor="#1A73E8"
+                            app:trackColorActive="#1A73E8"
+                            app:trackColorInactive="#D1E3FA"
+                            app:trackHeight="4dp" />
+
+                        <TextView
+                            android:id="@+id/textPhysicalActivityValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="0 hours/week"
+                            android:textColor="#1A73E8"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"

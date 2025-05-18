@@ -15,7 +15,7 @@ from constants import *
 def prepare_data():
     df = pd.read_csv("data.csv")
     df = df.drop(['DoctorInCharge', 'PatientID', 'CholesterolTotal', 'CholesterolLDL', 'CholesterolHDL',
-                  'CholesterolTriglycerides'], axis=1)
+                  'CholesterolTriglycerides', 'ADL', 'FunctionalAssessment'], axis=1)
 
     num_columns = df.select_dtypes(include=['int64', 'float64']).columns
     num_columns_to_scale = [col for col in num_columns if col != TARGET_COL and col not in EXCLUDE_FROM_SCALING]
