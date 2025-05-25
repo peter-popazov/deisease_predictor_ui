@@ -6,13 +6,19 @@ import android.util.Log
 import android.widget.CompoundButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
+import com.peter.rgr.viewmodel.CognitiveSymptomsViewModel
+import com.peter.rgr.viewmodel.MedicalHistoryViewModel
 import org.json.JSONObject
 import java.io.File
 import java.io.FileWriter
 
 class CognitiveSymptomsActivity : AppCompatActivity() {
+    private lateinit var viewModel: CognitiveSymptomsViewModel
+
     private lateinit var checkboxConfusion: MaterialCheckBox
     private lateinit var checkboxDisorientation: MaterialCheckBox
     private lateinit var checkboxForgetfulness: MaterialCheckBox
@@ -26,9 +32,11 @@ class CognitiveSymptomsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cognitive_symptoms)
+        viewModel = ViewModelProvider(this)[CognitiveSymptomsViewModel::class.java]
 
         initializeViews()
         setupCheckboxListeners()
+        observeViewModel()
         setupNavigation()
     }
 
@@ -45,10 +53,30 @@ class CognitiveSymptomsActivity : AppCompatActivity() {
     }
 
     private fun setupCheckboxListeners() {
-        // No need to update progress, just keeping the callback structure
-        val checkboxListener = { _: MaterialCheckBox, _: Boolean -> }
+        val checkboxListener = CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            when (buttonView.id) {
+                R.id.checkboxConfusion -> viewModel.updateCognitiveSymptoms(memoryProblems = isChecked)
+                R.id.checkboxDisorientation -> viewModel.updateCognitiveSymptoms(languageProblems = isChecked)
+                R.id.checkboxForgetfulness -> viewModel.updateCognitiveSymptoms(attentionProblems = isChecked)
+                R.id.checkboxDepression -> viewModel.updateCognitiveSymptoms(
+                    executiveFunctionProblems = isChecked
+                )
 
-        checkboxConfusion.setOnCheckedChangeListener(checkboxListener as ((CompoundButton, Boolean) -> Unit)?)
+                R.id.checkboxMemoryComplaints -> viewModel.updateCognitiveSymptoms(
+                    visuospatialProblems = isChecked
+                )
+
+                R.id.checkboxPersonalityChanges -> viewModel.updateCognitiveSymptoms(
+                    socialCognitionProblems = isChecked
+                )
+
+                R.id.checkboxDifficultyCompletingTasks -> viewModel.updateCognitiveSymptoms(
+                    difficultyCompletingTasks = isChecked
+                )
+            }
+        }
+
+        checkboxConfusion.setOnCheckedChangeListener(checkboxListener)
         checkboxDisorientation.setOnCheckedChangeListener(checkboxListener)
         checkboxForgetfulness.setOnCheckedChangeListener(checkboxListener)
         checkboxDepression.setOnCheckedChangeListener(checkboxListener)
@@ -60,8 +88,8 @@ class CognitiveSymptomsActivity : AppCompatActivity() {
     private fun setupNavigation() {
         buttonNext.setOnClickListener {
             try {
-                if (validateInputs()) {
-                    saveCognitiveData()
+                if (viewModel.validateInputs()) {
+                    viewModel.saveCognitiveSymptoms()
                     Log.d("CognitiveSymptomsActivity", "Navigating to MemoryTestActivity")
                     val intent = Intent(this, MemoryTestActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -78,39 +106,26 @@ class CognitiveSymptomsActivity : AppCompatActivity() {
         }
     }
 
-    private fun validateInputs(): Boolean {
-        // Since these are optional symptoms, we don't need to validate that any are checked
-        return true
-    }
+    private fun observeViewModel() {
+        viewModel.cognitiveSymptoms.observe(this, Observer { symptoms ->
+            try {
+                checkboxConfusion.isChecked = symptoms.confusion
+                checkboxDisorientation.isChecked = symptoms.disorientation
+                checkboxForgetfulness.isChecked = symptoms.forgetfulness
+                checkboxDepression.isChecked = symptoms.depression
+                checkboxMemoryComplaints.isChecked = symptoms.memoryComplaints
+                checkboxPersonalityChanges.isChecked = symptoms.personalityChanges
+                checkboxDifficultyCompletingTasks.isChecked = symptoms.difficultyCompletingTasks
+            } catch (e: Exception) {
+                Log.e("CognitiveSymptomsActivity", "UI update failed", e)
+                Toast.makeText(this, "UI update error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
 
-    private fun saveCognitiveData() {
-        val cognitiveData = JSONObject().apply {
-            put("confusion", checkboxConfusion.isChecked)
-            put("disorientation", checkboxDisorientation.isChecked)
-            put("forgetfulness", checkboxForgetfulness.isChecked)
-            put("depression", checkboxDepression.isChecked)
-            put("memoryComplaints", checkboxMemoryComplaints.isChecked)
-            put("personalityChanges", checkboxPersonalityChanges.isChecked)
-            put("difficultyCompletingTasks", checkboxDifficultyCompletingTasks.isChecked)
-        }
-
-        // Save to file
-        val file = File(filesDir, "cognitive_symptoms.json")
-        FileWriter(file).use { writer ->
-            writer.write(cognitiveData.toString())
-        }
-
-        // Save to SharedPreferences for easy access
-        val sharedPreferences = getSharedPreferences("PatientData", MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
-            putBoolean("confusion", checkboxConfusion.isChecked)
-            putBoolean("disorientation", checkboxDisorientation.isChecked)
-            putBoolean("forgetfulness", checkboxForgetfulness.isChecked)
-            putBoolean("depression", checkboxDepression.isChecked)
-            putBoolean("memoryComplaints", checkboxMemoryComplaints.isChecked)
-            putBoolean("personalityChanges", checkboxPersonalityChanges.isChecked)
-            putBoolean("difficultyCompletingTasks", checkboxDifficultyCompletingTasks.isChecked)
-            apply()
+        viewModel.error.observe(this) {
+            it?.let { error ->
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

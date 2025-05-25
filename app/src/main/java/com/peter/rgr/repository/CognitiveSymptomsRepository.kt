@@ -8,10 +8,22 @@ import java.io.File
 import java.io.FileWriter
 
 class CognitiveSymptomsRepository(private val context: Context) {
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("AlzheimerAssessment", Context.MODE_PRIVATE)
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("cognitive_history", Context.MODE_PRIVATE)
 
     fun saveCognitiveSymptoms(cognitiveSymptoms: CognitiveSymptoms) {
         try {
+            // Save to SharedPreferences
+            with(sharedPreferences.edit()) {
+                putBoolean("confusion", cognitiveSymptoms.confusion)
+                putBoolean("disorientation", cognitiveSymptoms.disorientation)
+                putBoolean("forgetfulness", cognitiveSymptoms.forgetfulness)
+                putBoolean("depression", cognitiveSymptoms.depression)
+                putBoolean("memoryComplaints", cognitiveSymptoms.memoryComplaints)
+                putBoolean("personalityChanges", cognitiveSymptoms.personalityChanges)
+                putBoolean("difficultyCompletingTasks", cognitiveSymptoms.difficultyCompletingTasks)
+                apply()
+            }
+
             // Save to JSON file
             val symptomsData = JSONObject().apply {
                 put("confusion", cognitiveSymptoms.confusion)
