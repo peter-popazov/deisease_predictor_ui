@@ -8,7 +8,7 @@ data class MedicalHistory(
     val diastolicBP: Int = 0,
     val alcoholConsumption: Int = 0,
     val physicalActivity: Int = 0,
-    val dietQuality: Int = 0,
-    val sleepQuality: Int = 0,
-    val smoking: Boolean = false
+    val dietQuality: String = "",
+    val sleepQuality: String = "",
+    val smoking: String = ""
 ) 

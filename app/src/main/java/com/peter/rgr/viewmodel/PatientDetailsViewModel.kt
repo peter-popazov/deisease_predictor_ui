@@ -10,7 +10,7 @@ import kotlin.math.round
 
 class PatientDetailsViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = PatientDetailsRepository(application)
-    
+
     private val _patientDetails = MutableLiveData<PatientDetails>()
     val patientDetails: LiveData<PatientDetails> = _patientDetails
 
@@ -21,9 +21,11 @@ class PatientDetailsViewModel(application: Application) : AndroidViewModel(appli
     val error: LiveData<String> = _error
 
     init {
-        // Reset patient details to default values on startup
-        _patientDetails.value = PatientDetails()
-        _bmi.value = 0.0 // Set initial BMI to null
+        loadPatientDetailsHistory()
+    }
+
+    private fun loadPatientDetailsHistory() {
+        _patientDetails.value = repository.getPatientDetails()
     }
 
     fun updatePatientDetails(
@@ -61,7 +63,7 @@ class PatientDetailsViewModel(application: Application) : AndroidViewModel(appli
 
     fun validateInputs(): Boolean {
         val current = _patientDetails.value ?: return false
-        
+
         if (current.age <= 0) {
             _error.value = "Please enter age"
             return false

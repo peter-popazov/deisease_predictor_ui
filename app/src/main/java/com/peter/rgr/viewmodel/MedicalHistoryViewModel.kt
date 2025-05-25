@@ -26,8 +26,7 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
     }
 
     private fun loadMedicalHistory() {
-        // Fetch the data from the repository and set it to the LiveData
-//        _medicalHistory.value = repository.getMedicalHistory() // Make sure this returns data
+        _medicalHistory.value = repository.getMedicalHistory()
     }
 
     fun updateMedicalHistory(
@@ -40,9 +39,9 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
         diastolicBP: Int? = null,
         alcoholConsumption: Int? = null,
         physicalActivity: Int? = null,
-        dietQuality: Int? = 0,
-        sleepQuality: Int? = 0,
-        smoking: Boolean? = false
+        dietQuality: String? = null,
+        sleepQuality: String? = null,
+        smoking: String? = null
     ) {
         val current = _medicalHistory.value ?: MedicalHistory()
         _medicalHistory.value = current.copy(
@@ -72,11 +71,11 @@ class MedicalHistoryViewModel(application: Application) : AndroidViewModel(appli
             _error.value = "Please enter diastolic blood pressure"
             return false
         }
-        if (current.dietQuality <= 0) {
+        if (current.dietQuality == "") {
             _error.value = "Please select diet quality"
             return false
         }
-        if (current.sleepQuality <= 0) {
+        if (current.sleepQuality == "") {
             _error.value = "Please select sleep quality"
             return false
         }

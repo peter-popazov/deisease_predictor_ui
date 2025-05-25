@@ -31,6 +31,7 @@ class MedicalHistoryActivity : AppCompatActivity() {
     private lateinit var editTextDiastolicBP: TextInputEditText
     private lateinit var sliderAlcohol: Slider
     private lateinit var sliderPhysicalActivity: Slider
+    private lateinit var textPhysicalActivityValue: TextView
     private lateinit var textAlcoholValue: TextView
     private lateinit var spinnerDietQuality: AutoCompleteTextView
     private lateinit var spinnerSleepQuality: AutoCompleteTextView
@@ -76,6 +77,7 @@ class MedicalHistoryActivity : AppCompatActivity() {
         sliderAlcohol = findViewById(R.id.sliderAlcohol)
         sliderPhysicalActivity = findViewById(R.id.sliderPhysicalActivity)
         textAlcoholValue = findViewById(R.id.textAlcoholValue)
+        textPhysicalActivityValue = findViewById(R.id.textPhysicalActivityValue)
         spinnerDietQuality = findViewById(R.id.spinnerDietQuality)
         spinnerSleepQuality = findViewById(R.id.spinnerSleepQuality)
         spinnerSmoking = findViewById(R.id.spinnerSmoking)
@@ -159,7 +161,7 @@ class MedicalHistoryActivity : AppCompatActivity() {
 
         sliderPhysicalActivity.addOnChangeListener { _, value, _ ->
             val physicalActivity = value.toInt()
-            textAlcoholValue.text = "$physicalActivity hours/week"
+            textPhysicalActivityValue.text = "$physicalActivity hours/week"
             viewModel.updateMedicalHistory(physicalActivity = physicalActivity)
         }
 
@@ -174,37 +176,20 @@ class MedicalHistoryActivity : AppCompatActivity() {
 
         spinnerDietQuality.setOnItemClickListener { _, _, position, _ ->
             (spinnerDietQuality.adapter?.getItem(position) as? String)?.let { selectedItem ->
-                val dietQuality = when (selectedItem) {
-                    "Poor" -> 2
-                    "Average" -> 5
-                    "Good" -> 8
-                    "Excellent" -> 10
-                    else -> 0
-                }
-                viewModel.updateMedicalHistory(dietQuality = dietQuality)
+                viewModel.updateMedicalHistory(dietQuality = selectedItem)
             }
         }
 
         spinnerSleepQuality.setOnItemClickListener { _, _, position, _ ->
             (spinnerSleepQuality.adapter?.getItem(position) as? String)?.let { selectedItem ->
-                val sleepQuality = when (selectedItem) {
-                    "Poor" -> 4
-                    "Fair" -> 6
-                    "Good" -> 8
-                    "Excellent" -> 10
-                    else -> 4
-                }
-                viewModel.updateMedicalHistory(sleepQuality = sleepQuality)
+                viewModel.updateMedicalHistory(sleepQuality = selectedItem)
             }
         }
 
         spinnerSmoking.setOnItemClickListener { _, _, position, _ ->
-            when ((spinnerSmoking.adapter?.getItem(position) as? String)) {
-                "Never" -> viewModel.updateMedicalHistory(smoking = false)
-                "Former" -> viewModel.updateMedicalHistory(smoking = false)
-                "Current" -> viewModel.updateMedicalHistory(smoking = true)
-                else -> viewModel.updateMedicalHistory(smoking = true)
-            }
+            viewModel.updateMedicalHistory(
+                smoking = (spinnerSmoking.adapter?.getItem(position) as? String) ?: ""
+            )
         }
     }
 
@@ -231,6 +216,13 @@ class MedicalHistoryActivity : AppCompatActivity() {
 
                 sliderAlcohol.value = history.alcoholConsumption.toFloat()
                 textAlcoholValue.text = "${history.alcoholConsumption} units"
+
+                sliderPhysicalActivity.value = history.physicalActivity.toFloat()
+                textPhysicalActivityValue.text = "${history.physicalActivity} hours/week"
+
+                spinnerDietQuality.setText(history.dietQuality)
+                spinnerSmoking.setText(history.smoking)
+                spinnerSleepQuality.setText(history.sleepQuality)
 
                 editTextSystolicBP.addTextChangedListener(systolicBPWatcher)
                 editTextDiastolicBP.addTextChangedListener(diastolicBPWatcher)
@@ -263,6 +255,12 @@ class MedicalHistoryActivity : AppCompatActivity() {
                 val intent = Intent(this, CognitiveSymptomsActivity::class.java)
                 startActivity(intent)
             }
+        }
+
+        buttonPrevious.setOnClickListener {
+            viewModel.saveMedicalHistory()
+            val intent = Intent(this, PatientDetailsActivity::class.java)
+            startActivity(intent)
         }
     }
 }

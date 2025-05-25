@@ -47,7 +47,12 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
         val memoryTestScore = sharedPreferences.getInt("memoryTestScore", -1)
 
         // Send data to API for prediction
-        sendRiskPredictionRequest(patientDetails, medicalHistory, memoryTestScore, congnitiveSymptoms)
+        sendRiskPredictionRequest(
+            patientDetails,
+            medicalHistory,
+            memoryTestScore,
+            congnitiveSymptoms
+        )
     }
 
     private fun sendRiskPredictionRequest(
@@ -62,10 +67,16 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // Prepare request body
-                val requestBody = createRequestBody(patientDetails, medicalHistory, memoryTestScore, cognitiveSymptoms)
+                val requestBody = createRequestBody(
+                    patientDetails,
+                    medicalHistory,
+                    memoryTestScore,
+                    cognitiveSymptoms
+                )
+                Log.d("ResultsViewModel", "Request Body: $requestBody")
 
                 // Endpoint URL - replace with your actual API endpoint
-                val apiUrl = "https://your-api-endpoint.com/predict-alzheimers-risk"
+                val apiUrl = "http://localhost:5000/predict"
 
                 // Create connection and set properties
                 val url = URL(apiUrl)
@@ -130,29 +141,65 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
         )
         requestJson.put("AlcoholConsumption", medicalHistory.alcoholConsumption * 2)
         requestJson.put("PhysicalActivity", medicalHistory.physicalActivity)
-        requestJson.put("DietQuality", medicalHistory.dietQuality)
-        requestJson.put("SleepQuality", medicalHistory.sleepQuality)
+        requestJson.put(
+            "DietQuality",
+            when (medicalHistory.dietQuality) {
+                "Poor" -> 2
+                "Average" -> 5
+                "Good" -> 8
+                "Excellent" -> 10
+                else -> 0
+            }
+        )
+        requestJson.put(
+            "SleepQuality", when (medicalHistory.sleepQuality) {
+                "Poor" -> 4
+                "Fair" -> 6
+                "Good" -> 8
+                "Excellent" -> 10
+                else -> 4
+            }
+        )
         requestJson.put("SystolicBP", medicalHistory.systolicBP)
         requestJson.put("DiastolicBP", medicalHistory.diastolicBP)
         requestJson.put("MMSE", memoryTestScore * 6)
 
         requestJson.put("BehavioralProblems", if (memoryTestScore == 0) "Yes" else "No")
-        requestJson.put("CardiovascularDisease", if (medicalHistory.cardiovascularDisease) "Yes" else "No")
+        requestJson.put(
+            "CardiovascularDisease",
+            if (medicalHistory.cardiovascularDisease) "Yes" else "No"
+        )
         requestJson.put("Confusion", if (cognitiveSymptoms.confusion) "Yes" else "No")
         requestJson.put("Depression", if (cognitiveSymptoms.depression) "Yes" else "No")
         requestJson.put("Diabetes", if (medicalHistory.diabetes) "Yes" else "No")
-        requestJson.put("DifficultyCompletingTasks", if (cognitiveSymptoms.difficultyCompletingTasks) "Yes" else "No")
+        requestJson.put(
+            "DifficultyCompletingTasks",
+            if (cognitiveSymptoms.difficultyCompletingTasks) "Yes" else "No"
+        )
         requestJson.put("Disorientation", if (cognitiveSymptoms.disorientation) "Yes" else "No")
         requestJson.put("EducationLevel", patientDetails.educationLevel)
         requestJson.put("Ethnicity", patientDetails.ethnicity)
-        requestJson.put("FamilyHistoryAlzheimers", if (medicalHistory.familyHistoryAlzheimers) "Yes" else "No")
+        requestJson.put(
+            "FamilyHistoryAlzheimers",
+            if (medicalHistory.familyHistoryAlzheimers) "Yes" else "No"
+        )
         requestJson.put("Forgetfulness", if (cognitiveSymptoms.forgetfulness) "Yes" else "No")
         requestJson.put("Gender", patientDetails.gender)
         requestJson.put("HeadInjury", if (medicalHistory.headInjury) "Yes" else "No")
         requestJson.put("Hypertension", if (medicalHistory.hypertension) "Yes" else "No")
         requestJson.put("MemoryComplaints", if (cognitiveSymptoms.memoryComplaints) "Yes" else "No")
-        requestJson.put("PersonalityChanges", if (cognitiveSymptoms.personalityChanges) "Yes" else "No")
-        requestJson.put("Smoking", medicalHistory.smoking)
+        requestJson.put(
+            "PersonalityChanges",
+            if (cognitiveSymptoms.personalityChanges) "Yes" else "No"
+        )
+        requestJson.put(
+            "Smoking", when (medicalHistory.smoking) {
+                "Never" -> "No"
+                "Former" -> "Yes"
+                "Current" -> "Yes"
+                else -> "Yes"
+            }
+        )
 
         requestJson.put("memory_test_score", memoryTestScore)
 

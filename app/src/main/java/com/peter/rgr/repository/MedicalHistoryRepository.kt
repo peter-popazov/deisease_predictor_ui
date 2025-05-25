@@ -57,9 +57,9 @@ class MedicalHistoryRepository(context: Context) {
                 diastolicBP = json.optInt("diastolicBP", 0),
                 alcoholConsumption = json.optInt("alcoholConsumption", 0),
                 physicalActivity = json.optInt("physicalActivity", 0),
-                dietQuality = json.optInt("dietQuality", 0),
-                sleepQuality = json.optInt("sleepQuality", 0),
-                smoking = json.optBoolean("smoking", false)
+                dietQuality = json.optString("dietQuality", ""),
+                sleepQuality = json.optString("sleepQuality", ""),
+                smoking = json.optString("smoking", "")
             )
         } else {
             Log.d(TAG, "No stored medical history found, returning empty")
