@@ -21,11 +21,11 @@ class PatientDetailsViewModel(application: Application) : AndroidViewModel(appli
     val error: LiveData<String> = _error
 
     init {
-        loadPatientDetailsHistory()
+//        loadPatientDetailsHistory()
     }
 
     private fun loadPatientDetailsHistory() {
-        _patientDetails.value = repository.getPatientDetails()
+//        _patientDetails.value = repository.getPatientDetails()
     }
 
     fun updatePatientDetails(

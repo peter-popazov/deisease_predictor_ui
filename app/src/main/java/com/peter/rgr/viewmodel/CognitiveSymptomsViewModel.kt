@@ -47,7 +47,6 @@ class CognitiveSymptomsViewModel(application: Application) : AndroidViewModel(ap
 
     fun validateInputs(): Boolean {
         val current = _cognitiveSymptoms.value ?: return false
-
         return true
     }
 
