@@ -27,6 +27,9 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
     private val _predictionResult = MutableLiveData<Float>()
     val predictionResult: LiveData<Float> = _predictionResult
 
+    private val _recommendations = MutableLiveData<List<String>>()
+    val recommendations: LiveData<List<String>> = _recommendations
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -101,7 +104,23 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
                     val response = connection.inputStream.bufferedReader().use { it.readText() }
                     val jsonResponse = JSONObject(response)
                     val riskPercentage = jsonResponse.getDouble("probability").toFloat() * 100
-//                    val recommendations = jsonResponse.getString("recommendations")
+
+                    // Parse recommendations as array of strings
+                    val recommendationsList = mutableListOf<String>()
+                    val recommendationsJson = jsonResponse.optJSONArray("recommendations")
+                    if (recommendationsJson != null) {
+                        for (i in 0 until recommendationsJson.length()) {
+                            recommendationsList.add(recommendationsJson.optString(i))
+                        }
+                    } else {
+                        val singleRecommendation = jsonResponse.optString("recommendations", "No recommendations available.")
+                        recommendationsList.add(singleRecommendation)
+                    }
+
+                    viewModelScope.launch(Dispatchers.Main) {
+                        _predictionResult.value = riskPercentage
+                        _recommendations.value = recommendationsList
+                    }
 
                     viewModelScope.launch(Dispatchers.Main) {
                         _predictionResult.value = riskPercentage
@@ -122,6 +141,7 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
                     _error.value = "Failed to get prediction: ${e.message}"
                     _isLoading.value = false
                     _predictionResult.value = 45f // Fallback result
+                    _recommendations.value = listOf("Error retrieving recommendations.")
                 }
             }
         }

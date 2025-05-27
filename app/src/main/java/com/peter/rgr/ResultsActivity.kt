@@ -23,7 +23,6 @@ class ResultsActivity : AppCompatActivity() {
     private lateinit var textViewRiskLevel: TextView
     private lateinit var textViewRecommendation: TextView
     private lateinit var cardViewRecommendation: CardView
-    private lateinit var buttonHome: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +32,7 @@ class ResultsActivity : AppCompatActivity() {
         
         initializeViews()
         observeViewModel()
-        setupNavigation()
-        
+
         // Calculate prediction based on collected data
         viewModel.calculatePrediction()
     }
@@ -45,12 +43,17 @@ class ResultsActivity : AppCompatActivity() {
         textViewRiskLevel = findViewById(R.id.textViewRiskLevel)
         textViewRecommendation = findViewById(R.id.textViewRecommendation)
         cardViewRecommendation = findViewById(R.id.cardViewRecommendation)
-        buttonHome = findViewById(R.id.buttonHome)
     }
     
     private fun observeViewModel() {
         viewModel.predictionResult.observe(this) { result ->
             updateChartAndDisplay(result)
+        }
+
+        viewModel.recommendations.observe(this) { recommendations ->
+            // Display recommendations as bullet points
+            val bulletPoints = recommendations.joinToString(separator = "\n") { "• $it" }
+            textViewRecommendation.text = bulletPoints
         }
     }
     
@@ -63,17 +66,17 @@ class ResultsActivity : AppCompatActivity() {
             riskPercentage < 30 -> {
                 textViewRiskLevel.text = "Low Risk"
                 textViewRiskLevel.setTextColor(Color.parseColor("#4CAF50")) // Green
-                textViewRecommendation.text = "Your risk for Alzheimer's seems low based on the data provided. Continue maintaining a healthy lifestyle. Consider regular cognitive assessments as you age."
+//                textViewRecommendation.text = "Your risk for Alzheimer's seems low based on the data provided. Continue maintaining a healthy lifestyle. Consider regular cognitive assessments as you age."
             }
             riskPercentage < 60 -> {
                 textViewRiskLevel.text = "Moderate Risk"
                 textViewRiskLevel.setTextColor(Color.parseColor("#FFA000")) // Amber
-                textViewRecommendation.text = "Your results indicate a moderate risk. Consider consulting with a neurologist for further assessment. Lifestyle modifications may help reduce risk factors."
+//                textViewRecommendation.text = "Your results indicate a moderate risk. Consider consulting with a neurologist for further assessment. Lifestyle modifications may help reduce risk factors."
             }
             else -> {
                 textViewRiskLevel.text = "High Risk"
                 textViewRiskLevel.setTextColor(Color.parseColor("#F44336")) // Red
-                textViewRecommendation.text = "Your results indicate a high risk. We strongly recommend consulting with a healthcare professional specializing in neurological disorders for a comprehensive evaluation."
+//                textViewRecommendation.text = "Your results indicate a high risk. We strongly recommend consulting with a healthcare professional specializing in neurological disorders for a comprehensive evaluation."
             }
         }
         
@@ -117,14 +120,5 @@ class ResultsActivity : AppCompatActivity() {
         // Animate chart
         pieChart.animateY(1000)
         pieChart.invalidate()
-    }
-    
-    private fun setupNavigation() {
-        buttonHome.setOnClickListener {
-            val intent = Intent(this, PatientDetails::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
-            finish()
-        }
     }
 }

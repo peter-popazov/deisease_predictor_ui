@@ -136,7 +136,8 @@
                 android:layout_height="wrap_content"
                 android:text="Based on your assessment, we recommend..."
                 android:textColor="#000000"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:lineSpacingExtra="6dp" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -148,19 +149,5 @@
                 android:textStyle="italic" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
-    <Button
-        android:id="@+id/buttonHome"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:padding="16dp"
-        android:text="Return to Start"
-        android:textAllCaps="false"
-        app:cornerRadius="12dp"
-        android:backgroundTint="#0288D1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
