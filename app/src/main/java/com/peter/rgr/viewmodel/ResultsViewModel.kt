@@ -75,15 +75,19 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
                 )
                 Log.d("ResultsViewModel", "Request Body: $requestBody")
 
-                // Endpoint URL - replace with your actual API endpoint
-                val apiUrl = "http://localhost:5000/predict"
+                // Endpoint URL
+                val apiUrl = "http://192.168.0.173:5000/predict"
 
-                // Create connection and set properties
+                // Create connection
                 val url = URL(apiUrl)
                 val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "POST"
-                connection.setRequestProperty("Content-Type", "application/json")
-                connection.doOutput = true
+                connection.apply {
+                    requestMethod = "POST"
+                    setRequestProperty("Content-Type", "application/json")
+                    doOutput = true
+                    connectTimeout = 10000 // 10 seconds
+                    readTimeout = 10000 // 10 seconds
+                }
 
                 // Send request body
                 connection.outputStream.use { os ->
@@ -94,21 +98,19 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
                 // Read response
                 val responseCode = connection.responseCode
                 if (responseCode == HttpURLConnection.HTTP_OK) {
-                    // Parse response
                     val response = connection.inputStream.bufferedReader().use { it.readText() }
                     val jsonResponse = JSONObject(response)
-                    val riskPercentage = jsonResponse.getDouble("risk_percentage").toFloat()
+                    val riskPercentage = jsonResponse.getDouble("probability").toFloat() * 100
+//                    val recommendations = jsonResponse.getString("recommendations")
 
-                    // Update UI on main thread
                     viewModelScope.launch(Dispatchers.Main) {
                         _predictionResult.value = riskPercentage
                         _isLoading.value = false
                     }
                 } else {
-                    // Handle error
                     val errorMessage =
                         connection.errorStream?.bufferedReader()?.use { it.readText() }
-                            ?: "Unknown error occurred: HTTP $responseCode"
+                            ?: "HTTP $responseCode: Unknown error"
                     throw Exception(errorMessage)
                 }
 
@@ -119,9 +121,7 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
                 viewModelScope.launch(Dispatchers.Main) {
                     _error.value = "Failed to get prediction: ${e.message}"
                     _isLoading.value = false
-
-                    // For demo purposes, provide a fallback result
-                    _predictionResult.value = 45f
+                    _predictionResult.value = 45f // Fallback result
                 }
             }
         }
@@ -200,8 +200,6 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
                 else -> "Yes"
             }
         )
-
-        requestJson.put("memory_test_score", memoryTestScore)
 
         return requestJson
     }
