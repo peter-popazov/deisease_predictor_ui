@@ -150,4 +150,20 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
+    <Button
+        android:id="@+id/buttonReturnHome"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Return to Home"
+        android:textAllCaps="false"
+        android:layout_margin="24dp"
+        android:layout_marginTop="96dp"
+        android:backgroundTint="#1A73E8"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,10 +1,10 @@
 package com.peter.rgr
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.widget.Button
 import android.widget.TextView
+import android.widget.Button
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
@@ -12,7 +12,6 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.peter.rgr.data.PatientDetails
 import com.peter.rgr.viewmodel.ResultsViewModel
 
 class ResultsActivity : AppCompatActivity() {
@@ -23,6 +22,7 @@ class ResultsActivity : AppCompatActivity() {
     private lateinit var textViewRiskLevel: TextView
     private lateinit var textViewRecommendation: TextView
     private lateinit var cardViewRecommendation: CardView
+    private lateinit var buttonReturnHome: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +35,14 @@ class ResultsActivity : AppCompatActivity() {
 
         // Calculate prediction based on collected data
         viewModel.calculatePrediction()
+
+        // Set up return button
+        buttonReturnHome.setOnClickListener {
+            val intent = Intent(this, PatientDetailsActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            finish()
+        }
     }
     
     private fun initializeViews() {
@@ -43,6 +51,7 @@ class ResultsActivity : AppCompatActivity() {
         textViewRiskLevel = findViewById(R.id.textViewRiskLevel)
         textViewRecommendation = findViewById(R.id.textViewRecommendation)
         cardViewRecommendation = findViewById(R.id.cardViewRecommendation)
+        buttonReturnHome = findViewById(R.id.buttonReturnHome)
     }
     
     private fun observeViewModel() {

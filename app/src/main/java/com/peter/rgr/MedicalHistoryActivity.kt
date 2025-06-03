@@ -58,7 +58,7 @@ class MedicalHistoryActivity : AppCompatActivity() {
 
         initializeViews()
         setupSpinners()
-        observeViewModel() // <-- Observe before attaching listeners
+        observeViewModel()
         setupFieldListeners()
         setupNavigation()
     }
