@@ -90,27 +90,13 @@ class MedicalHistoryActivity : AppCompatActivity() {
         val sleepOptions = listOf("Poor", "Fair", "Good", "Excellent")
         val smokingOptions = listOf("Never", "Former", "Current")
 
-        spinnerDietQuality.setAdapter(
-            ArrayAdapter(
-                this,
-                android.R.layout.simple_dropdown_item_1line,
-                dietOptions
-            )
-        )
-        spinnerSleepQuality.setAdapter(
-            ArrayAdapter(
-                this,
-                android.R.layout.simple_dropdown_item_1line,
-                sleepOptions
-            )
-        )
-        spinnerSmoking.setAdapter(
-            ArrayAdapter(
-                this,
-                android.R.layout.simple_dropdown_item_1line,
-                smokingOptions
-            )
-        )
+        val dietAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, dietOptions)
+        val sleepAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, sleepOptions)
+        val smokingAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, smokingOptions)
+
+        spinnerDietQuality.setAdapter(dietAdapter)
+        spinnerSleepQuality.setAdapter(sleepAdapter)
+        spinnerSmoking.setAdapter(smokingAdapter)
     }
 
     private fun setupFieldListeners() {
@@ -175,21 +161,24 @@ class MedicalHistoryActivity : AppCompatActivity() {
         checkBoxHeadInjury.setOnCheckedChangeListener(headInjuryCheckedChangeListener)
 
         spinnerDietQuality.setOnItemClickListener { _, _, position, _ ->
-            (spinnerDietQuality.adapter?.getItem(position) as? String)?.let { selectedItem ->
-                viewModel.updateMedicalHistory(dietQuality = selectedItem)
+            val selectedItem = spinnerDietQuality.adapter.getItem(position) as? String
+            selectedItem?.let {
+                viewModel.updateMedicalHistory(dietQuality = it)
             }
         }
 
         spinnerSleepQuality.setOnItemClickListener { _, _, position, _ ->
-            (spinnerSleepQuality.adapter?.getItem(position) as? String)?.let { selectedItem ->
-                viewModel.updateMedicalHistory(sleepQuality = selectedItem)
+            val selectedItem = spinnerSleepQuality.adapter.getItem(position) as? String
+            selectedItem?.let {
+                viewModel.updateMedicalHistory(sleepQuality = it)
             }
         }
 
         spinnerSmoking.setOnItemClickListener { _, _, position, _ ->
-            viewModel.updateMedicalHistory(
-                smoking = (spinnerSmoking.adapter?.getItem(position) as? String) ?: ""
-            )
+            val selectedItem = spinnerSmoking.adapter.getItem(position) as? String
+            selectedItem?.let {
+                viewModel.updateMedicalHistory(smoking = it)
+            }
         }
     }
 
@@ -220,9 +209,9 @@ class MedicalHistoryActivity : AppCompatActivity() {
                 sliderPhysicalActivity.value = history.physicalActivity.toFloat()
                 textPhysicalActivityValue.text = "${history.physicalActivity} hours/week"
 
-                spinnerDietQuality.setText(history.dietQuality)
-                spinnerSmoking.setText(history.smoking)
-                spinnerSleepQuality.setText(history.sleepQuality)
+                spinnerDietQuality.setText(history.dietQuality, false)
+                spinnerSmoking.setText(history.smoking, false)
+                spinnerSleepQuality.setText(history.sleepQuality, false)
 
                 editTextSystolicBP.addTextChangedListener(systolicBPWatcher)
                 editTextDiastolicBP.addTextChangedListener(diastolicBPWatcher)

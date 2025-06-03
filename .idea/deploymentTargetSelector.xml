@@ -11,9 +11,6 @@
       <SelectionState runConfigName="PatientDetailsActivity (2)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="MedicalHistoryActivity">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="rgr">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

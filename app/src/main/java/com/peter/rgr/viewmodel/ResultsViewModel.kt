@@ -79,7 +79,9 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
                 Log.d("ResultsViewModel", "Request Body: $requestBody")
 
                 // Endpoint URL
-                val apiUrl = "http://192.168.0.173:5000/predict"
+                // Make sure this IP is reachable from your Android device/emulator.
+                // If running on an emulator, use 10.0.2.2 for localhost.
+                val apiUrl = "http://192.168.2.207:5000/predict" // <-- changed from 192.168.x.x
 
                 // Create connection
                 val url = URL(apiUrl)
@@ -88,8 +90,8 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
                     requestMethod = "POST"
                     setRequestProperty("Content-Type", "application/json")
                     doOutput = true
-                    connectTimeout = 10000 // 10 seconds
-                    readTimeout = 10000 // 10 seconds
+                    connectTimeout = 15000 // Increased timeout to 15 seconds
+                    readTimeout = 15000 // Increased timeout to 15 seconds
                 }
 
                 // Send request body
@@ -135,10 +137,23 @@ class ResultsViewModel(application: Application) : AndroidViewModel(application)
 
                 connection.disconnect()
 
+            } catch (e: java.net.SocketTimeoutException) {
+                Log.e("ResultsViewModel", "API request timeout", e)
+                viewModelScope.launch(Dispatchers.Main) {
+                    _error.value = "Connection timed out. Please check your network or server."
+                    _isLoading.value = false
+                    _predictionResult.value = 0f
+                    _recommendations.value = listOf("Could not connect to prediction server.")
+                }
             } catch (e: Exception) {
                 Log.e("ResultsViewModel", "API request failed", e)
                 viewModelScope.launch(Dispatchers.Main) {
-                    _error.value = "Failed to get prediction: ${e.message}"
+                    // Add specific error message for cleartext HTTP traffic
+                    if (e.message?.contains("Cleartext HTTP traffic") == true) {
+                        _error.value = "Cleartext HTTP traffic is not permitted. Enable cleartext support in your network security config."
+                    } else {
+                        _error.value = "Failed to get prediction: ${e.message}"
+                    }
                     _isLoading.value = false
                     _predictionResult.value = 45f // Fallback result
                     _recommendations.value = listOf("Error retrieving recommendations.")
