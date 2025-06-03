@@ -1,5 +1,6 @@
 package com.peter.rgr
 
+import MedicalHistory
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -11,7 +12,6 @@ import android.widget.CompoundButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -51,19 +51,16 @@ class MedicalHistoryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_medical_history)
-        viewModel = ViewModelProvider(this)[MedicalHistoryViewModel::class.java]
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        ).get(MedicalHistoryViewModel::class.java)
 
-        try {
-            initializeViews()
-            setupSpinners()
-            setupFieldListeners()
-            observeViewModel()
-            setupNavigation()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Error initializing activity: ${e.message}", Toast.LENGTH_LONG)
-                .show()
-            finish()
-        }
+        initializeViews()
+        setupSpinners()
+        observeViewModel() // <-- Observe before attaching listeners
+        setupFieldListeners()
+        setupNavigation()
     }
 
     private fun initializeViews() {
@@ -90,13 +87,9 @@ class MedicalHistoryActivity : AppCompatActivity() {
         val sleepOptions = listOf("Poor", "Fair", "Good", "Excellent")
         val smokingOptions = listOf("Never", "Former", "Current")
 
-        val dietAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, dietOptions)
-        val sleepAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, sleepOptions)
-        val smokingAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, smokingOptions)
-
-        spinnerDietQuality.setAdapter(dietAdapter)
-        spinnerSleepQuality.setAdapter(sleepAdapter)
-        spinnerSmoking.setAdapter(smokingAdapter)
+        spinnerDietQuality.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, dietOptions))
+        spinnerSleepQuality.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, sleepOptions))
+        spinnerSmoking.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, smokingOptions))
     }
 
     private fun setupFieldListeners() {
@@ -106,7 +99,6 @@ class MedicalHistoryActivity : AppCompatActivity() {
                 val diastolic = editTextDiastolicBP.text?.toString()?.toIntOrNull() ?: 0
                 viewModel.updateMedicalHistory(systolicBP = systolic, diastolicBP = diastolic)
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }
@@ -117,7 +109,6 @@ class MedicalHistoryActivity : AppCompatActivity() {
                 val diastolic = s.toString().toIntOrNull() ?: 0
                 viewModel.updateMedicalHistory(systolicBP = systolic, diastolicBP = diastolic)
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }
@@ -130,10 +121,13 @@ class MedicalHistoryActivity : AppCompatActivity() {
             viewModel.updateMedicalHistory(hypertension = isChecked)
         }
 
-        cardiovascularCheckedChangeListener =
-            CompoundButton.OnCheckedChangeListener { _, isChecked ->
-                viewModel.updateMedicalHistory(cardiovascularDisease = isChecked)
-            }
+        cardiovascularCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+            viewModel.updateMedicalHistory(cardiovascularDisease = isChecked)
+        }
+
+        familyHistoryCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
+            viewModel.updateMedicalHistory(familyHistoryAlzheimers = isChecked)
+        }
 
         headInjuryCheckedChangeListener = CompoundButton.OnCheckedChangeListener { _, isChecked ->
             viewModel.updateMedicalHistory(headInjury = isChecked)
@@ -160,75 +154,22 @@ class MedicalHistoryActivity : AppCompatActivity() {
         checkBoxFamilyHistory.setOnCheckedChangeListener(familyHistoryCheckedChangeListener)
         checkBoxHeadInjury.setOnCheckedChangeListener(headInjuryCheckedChangeListener)
 
-        spinnerDietQuality.setOnItemClickListener { _, _, position, _ ->
-            val selectedItem = spinnerDietQuality.adapter.getItem(position) as? String
-            selectedItem?.let {
-                viewModel.updateMedicalHistory(dietQuality = it)
-            }
-        }
+        setupSpinner(spinnerDietQuality) { viewModel.updateMedicalHistory(dietQuality = it) }
+        setupSpinner(spinnerSleepQuality) { viewModel.updateMedicalHistory(sleepQuality = it) }
+        setupSpinner(spinnerSmoking) { viewModel.updateMedicalHistory(smoking = it) }
+    }
 
-        spinnerSleepQuality.setOnItemClickListener { _, _, position, _ ->
-            val selectedItem = spinnerSleepQuality.adapter.getItem(position) as? String
-            selectedItem?.let {
-                viewModel.updateMedicalHistory(sleepQuality = it)
-            }
-        }
-
-        spinnerSmoking.setOnItemClickListener { _, _, position, _ ->
-            val selectedItem = spinnerSmoking.adapter.getItem(position) as? String
-            selectedItem?.let {
-                viewModel.updateMedicalHistory(smoking = it)
-            }
+    private fun setupSpinner(spinner: AutoCompleteTextView, update: (String) -> Unit) {
+        spinner.setOnItemClickListener { _, _, position, _ ->
+            val item = spinner.adapter.getItem(position) as? String
+            item?.let { update(it) }
         }
     }
 
     private fun observeViewModel() {
-        viewModel.medicalHistory.observe(this, Observer { history ->
-            try {
-                editTextSystolicBP.removeTextChangedListener(systolicBPWatcher)
-                editTextDiastolicBP.removeTextChangedListener(diastolicBPWatcher)
-
-                checkBoxDiabetes.setOnCheckedChangeListener(null)
-                checkBoxHypertension.setOnCheckedChangeListener(null)
-                checkBoxCardiovascularDisease.setOnCheckedChangeListener(null)
-                checkBoxFamilyHistory.setOnCheckedChangeListener(null)
-                checkBoxHeadInjury.setOnCheckedChangeListener(null)
-
-                checkBoxDiabetes.isChecked = history.diabetes
-                checkBoxHypertension.isChecked = history.hypertension
-                checkBoxCardiovascularDisease.isChecked = history.cardiovascularDisease
-                checkBoxFamilyHistory.isChecked = history.familyHistoryAlzheimers
-                checkBoxHeadInjury.isChecked = history.headInjury
-
-                editTextSystolicBP.setText(if (history.systolicBP > 0) history.systolicBP.toString() else "")
-                editTextDiastolicBP.setText(if (history.diastolicBP > 0) history.diastolicBP.toString() else "")
-
-                sliderAlcohol.value = history.alcoholConsumption.toFloat()
-                textAlcoholValue.text = "${history.alcoholConsumption} units"
-
-                sliderPhysicalActivity.value = history.physicalActivity.toFloat()
-                textPhysicalActivityValue.text = "${history.physicalActivity} hours/week"
-
-                spinnerDietQuality.setText(history.dietQuality, false)
-                spinnerSmoking.setText(history.smoking, false)
-                spinnerSleepQuality.setText(history.sleepQuality, false)
-
-                editTextSystolicBP.addTextChangedListener(systolicBPWatcher)
-                editTextDiastolicBP.addTextChangedListener(diastolicBPWatcher)
-
-                checkBoxDiabetes.setOnCheckedChangeListener(diabetesCheckedChangeListener)
-                checkBoxHypertension.setOnCheckedChangeListener(hypertensionCheckedChangeListener)
-                checkBoxCardiovascularDisease.setOnCheckedChangeListener(
-                    cardiovascularCheckedChangeListener
-                )
-                checkBoxFamilyHistory.setOnCheckedChangeListener(familyHistoryCheckedChangeListener)
-                checkBoxHeadInjury.setOnCheckedChangeListener(headInjuryCheckedChangeListener)
-
-            } catch (e: Exception) {
-                Log.e("MedicalHistoryActivity", "UI update failed", e)
-                Toast.makeText(this, "UI update error: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
+        viewModel.medicalHistory.observe(this) { history ->
+            updateUI(history)
+        }
 
         viewModel.error.observe(this) {
             it?.let { error ->
@@ -237,19 +178,77 @@ class MedicalHistoryActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateUI(history: MedicalHistory) {
+        try {
+            // Remove listeners to avoid triggering them during UI update
+            editTextSystolicBP.removeTextChangedListener(systolicBPWatcher)
+            editTextDiastolicBP.removeTextChangedListener(diastolicBPWatcher)
+            checkBoxDiabetes.setOnCheckedChangeListener(null)
+            checkBoxHypertension.setOnCheckedChangeListener(null)
+            checkBoxCardiovascularDisease.setOnCheckedChangeListener(null)
+            checkBoxFamilyHistory.setOnCheckedChangeListener(null)
+            checkBoxHeadInjury.setOnCheckedChangeListener(null)
+
+            // Only update UI if value has changed to avoid unnecessary resets
+            if (checkBoxDiabetes.isChecked != history.diabetes)
+                checkBoxDiabetes.isChecked = history.diabetes
+            if (checkBoxHypertension.isChecked != history.hypertension)
+                checkBoxHypertension.isChecked = history.hypertension
+            if (checkBoxCardiovascularDisease.isChecked != history.cardiovascularDisease)
+                checkBoxCardiovascularDisease.isChecked = history.cardiovascularDisease
+            if (checkBoxFamilyHistory.isChecked != history.familyHistoryAlzheimers)
+                checkBoxFamilyHistory.isChecked = history.familyHistoryAlzheimers
+            if (checkBoxHeadInjury.isChecked != history.headInjury)
+                checkBoxHeadInjury.isChecked = history.headInjury
+
+            val systolicStr = if (history.systolicBP > 0) history.systolicBP.toString() else ""
+            if (editTextSystolicBP.text?.toString() != systolicStr)
+                editTextSystolicBP.setText(systolicStr)
+            val diastolicStr = if (history.diastolicBP > 0) history.diastolicBP.toString() else ""
+            if (editTextDiastolicBP.text?.toString() != diastolicStr)
+                editTextDiastolicBP.setText(diastolicStr)
+
+            if (sliderAlcohol.value != history.alcoholConsumption.toFloat())
+                sliderAlcohol.value = history.alcoholConsumption.toFloat()
+            textAlcoholValue.text = "${history.alcoholConsumption} units"
+
+            if (sliderPhysicalActivity.value != history.physicalActivity.toFloat())
+                sliderPhysicalActivity.value = history.physicalActivity.toFloat()
+            textPhysicalActivityValue.text = "${history.physicalActivity} hours/week"
+
+            if (spinnerDietQuality.text.toString() != history.dietQuality)
+                spinnerDietQuality.setText(history.dietQuality, false)
+            if (spinnerSmoking.text.toString() != history.smoking)
+                spinnerSmoking.setText(history.smoking, false)
+            if (spinnerSleepQuality.text.toString() != history.sleepQuality)
+                spinnerSleepQuality.setText(history.sleepQuality, false)
+
+            // Re-attach listeners
+            editTextSystolicBP.addTextChangedListener(systolicBPWatcher)
+            editTextDiastolicBP.addTextChangedListener(diastolicBPWatcher)
+            checkBoxDiabetes.setOnCheckedChangeListener(diabetesCheckedChangeListener)
+            checkBoxHypertension.setOnCheckedChangeListener(hypertensionCheckedChangeListener)
+            checkBoxCardiovascularDisease.setOnCheckedChangeListener(cardiovascularCheckedChangeListener)
+            checkBoxFamilyHistory.setOnCheckedChangeListener(familyHistoryCheckedChangeListener)
+            checkBoxHeadInjury.setOnCheckedChangeListener(headInjuryCheckedChangeListener)
+
+        } catch (e: Exception) {
+            Log.e("MedicalHistoryActivity", "UI update failed", e)
+            Toast.makeText(this, "UI update error: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun setupNavigation() {
         buttonNext.setOnClickListener {
             if (viewModel.validateInputs()) {
                 viewModel.saveMedicalHistory()
-                val intent = Intent(this, CognitiveSymptomsActivity::class.java)
-                startActivity(intent)
+                startActivity(Intent(this, CognitiveSymptomsActivity::class.java))
             }
         }
 
         buttonPrevious.setOnClickListener {
             viewModel.saveMedicalHistory()
-            val intent = Intent(this, PatientDetailsActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, PatientDetailsActivity::class.java))
         }
     }
 }

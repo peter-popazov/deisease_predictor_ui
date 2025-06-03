@@ -28,6 +28,8 @@ class PatientDetailsActivity : AppCompatActivity() {
     private lateinit var textViewBMI: TextView
     private lateinit var buttonNext: MaterialButton
 
+    private var isUpdatingFromViewModel = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_patient_details)
@@ -85,6 +87,7 @@ class PatientDetailsActivity : AppCompatActivity() {
     private fun setupFieldListeners() {
         editTextAge.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
+                if (isUpdatingFromViewModel) return
                 val age = s.toString().toIntOrNull()
                 if (age == null || age < 0) {
                     editTextAge.error = "Invalid age"
@@ -109,6 +112,7 @@ class PatientDetailsActivity : AppCompatActivity() {
 
         editTextWeight.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
+                if (isUpdatingFromViewModel) return
                 val weight = s.toString().toFloatOrNull()
                 viewModel.updatePatientDetails(weight = weight)
             }
@@ -137,7 +141,41 @@ class PatientDetailsActivity : AppCompatActivity() {
         viewModel.bmi.observe(this) { bmi ->
             textViewBMI.text = "BMI: %.2f".format(bmi)
         }
+
+        viewModel.patientDetails.observe(this) { details ->
+            Log.d("PatientDetailsActivity", "Observed patient details: $details")
+
+            isUpdatingFromViewModel = true
+
+            if (editTextAge.text.toString() != (details.age.takeIf { it > 0 }?.toString() ?: "")) {
+                editTextAge.setText(details.age.takeIf { it > 0 }?.toString() ?: "")
+            }
+
+            if (spinnerGender.text.toString() != details.gender) {
+                spinnerGender.setText(details.gender, false)
+            }
+
+            if (editTextHeight.text.toString() != (details.height.takeIf { it > 0 }?.toString() ?: "")) {
+                editTextHeight.setText(details.height.takeIf { it > 0 }?.toString() ?: "")
+            }
+
+            if (editTextWeight.text.toString() != (details.weight.takeIf { it > 0 }?.toString() ?: "")) {
+                editTextWeight.setText(details.weight.takeIf { it > 0 }?.toString() ?: "")
+            }
+
+            if (spinnerEducation.text.toString() != details.educationLevel) {
+                spinnerEducation.setText(details.educationLevel, false)
+            }
+
+            if (spinnerEthnicity.text.toString() != details.ethnicity) {
+                spinnerEthnicity.setText(details.ethnicity, false)
+            }
+
+            isUpdatingFromViewModel = false
+        }
+
     }
+
 
     private fun setupNavigation() {
         buttonNext.setOnClickListener {
